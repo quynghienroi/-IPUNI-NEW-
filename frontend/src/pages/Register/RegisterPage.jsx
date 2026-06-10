@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Activity } from 'lucide-react';
+import Logo from '../../components/common/Logo';
 import { useAuth } from '../../hooks/useAuth';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
@@ -45,7 +45,7 @@ export default function RegisterPage() {
   return (
     <div className={styles.page}>
       <div className={styles.logoSection}>
-        <div className={styles.logoIcon}><Activity size={36} color="#fff" strokeWidth={2.5} /></div>
+        <Logo size="lg" variant="onDark" />
         <div className={styles.logoName}>DIA+</div>
         <div className={styles.tagline}>Tạo tài khoản mới<br />để bắt đầu theo dõi sức khỏe</div>
       </div>

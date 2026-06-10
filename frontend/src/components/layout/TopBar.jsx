@@ -1,7 +1,8 @@
-import { Activity, Bell, BookOpen, Sparkles } from 'lucide-react';
+import { Bell, BookOpen, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import UserMenu from './UserMenu';
 import useThemeStore from '../../store/themeStore';
+import Logo from '../common/Logo';
 import styles from './TopBar.module.css';
 
 export default function TopBar() {
@@ -11,11 +12,9 @@ export default function TopBar() {
   return (
     <header className={styles.topbar}>
       <div className={styles.logo}>
-        {isCuteMode
-          ? <Sparkles size={22} color="#fff" strokeWidth={2.5} />
-          : <Activity size={22} color="#fff" strokeWidth={2.5} />
-        }
+        <Logo size="sm" variant="onDark" />
         <span className={styles.logoText}>DIA+</span>
+        {isCuteMode && <Sparkles size={14} color="#fff" strokeWidth={2.5} />}
         {isCuteMode && <span className={styles.cuteBadge}>cute</span>}
       </div>
       <div className={styles.actions}>

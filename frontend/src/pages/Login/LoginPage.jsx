@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Activity } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import Logo from '../../components/common/Logo';
 import { useT } from '../../hooks/useT';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
@@ -34,7 +34,7 @@ export default function LoginPage() {
   return (
     <div className={styles.page}>
       <div className={styles.logoSection}>
-        <div className={styles.logoIcon}><Activity size={36} color="#fff" strokeWidth={2.5} /></div>
+        <Logo size="lg" variant="onDark" />
         <div className={styles.logoName}>DIA+</div>
         <div className={styles.tagline}>{t.auth.taglineLogin.replace('\\n', '\n')}</div>
       </div>

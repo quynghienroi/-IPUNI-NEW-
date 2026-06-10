@@ -1,4 +1,4 @@
-const Anthropic = require('@anthropic-ai/sdk');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const DIABETES_KEYWORDS = [
   'metformin', 'glucophage', 'diamet', 'tiaphage', 'gluformin', 'glucofast',
@@ -28,85 +28,119 @@ function isDiabetesDrug(name) {
   return DIABETES_KEYWORDS.some(k => lower.includes(k));
 }
 
-async function analyzePrescription(imageBuffer, mimeType) {
-  if (!process.env.ANTHROPIC_API_KEY) {
-    const err = new Error('ANTHROPIC_API_KEY chưa được cấu hình trong file .env');
-    err.status = 503;
-    throw err;
-  }
+const PROMPT = `Bạn là dược sĩ lâm sàng chuyên về đái tháo đường, đọc đơn thuốc Việt Nam (kể cả chữ viết tay của bác sĩ).
 
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+Phân tích ảnh và trả về JSON HỢP LỆ, KHÔNG kèm bất kỳ text nào ngoài JSON.
 
-  const response = await client.messages.create({
-    model: 'claude-opus-4-8',
-    max_tokens: 2048,
-    messages: [{
-      role: 'user',
-      content: [
-        {
-          type: 'image',
-          source: {
-            type: 'base64',
-            media_type: mimeType,
-            data: imageBuffer.toString('base64'),
-          },
-        },
-        {
-          type: 'text',
-          text: `Phân tích đơn thuốc Việt Nam trong ảnh này. Trích xuất tất cả thông tin thuốc.
+BƯỚC 1 — Xác định loại đơn:
+- "isPrescription": true nếu ảnh là một đơn thuốc / toa thuốc y tế; false nếu không phải.
+- "isDiabetesPrescription": true CHỈ KHI đơn này dùng để điều trị bệnh đái tháo đường (tiểu đường) — căn cứ vào chẩn đoán ghi trên đơn HOẶC có ít nhất một thuốc hạ đường huyết (metformin, gliclazide, glimepiride, insulin, sitagliptin, empagliflozin, dapagliflozin, ...). Nếu đơn cho bệnh khác (cảm cúm, huyết áp đơn thuần, dạ dày, ...) thì để false.
+- "rejectionReason": nếu isDiabetesPrescription = false, ghi ngắn gọn lý do bằng tiếng Việt (vd: "Đây là đơn thuốc điều trị cảm cúm, không phải đái tháo đường"). Nếu là đơn tiểu đường thì để null.
 
-Trả về JSON hợp lệ, KHÔNG có text nào khác ngoài JSON:
+Nếu KHÔNG phải đơn tiểu đường, CHỈ cần trả về:
+{"isPrescription": <true/false>, "isDiabetesPrescription": false, "rejectionReason": "...", "medications": []}
+
+BƯỚC 2 — Nếu LÀ đơn tiểu đường, trích xuất đầy đủ:
 {
+  "isPrescription": true,
+  "isDiabetesPrescription": true,
+  "rejectionReason": null,
+  "doctorName": "tên bác sĩ nếu đọc được, hoặc null",
+  "prescriptionDate": "YYYY-MM-DD hoặc null",
+  "diagnosis": "chẩn đoán ghi trên đơn, hoặc null",
+  "doctorNotes": "diễn giải lại TOÀN BỘ chữ viết tay và lời dặn của bác sĩ thành tiếng Việt rõ ràng (vd: tái khám sau 1 tháng, kiêng đường, tập thể dục...). null nếu không có",
   "medications": [
     {
-      "name": "tên thuốc (chỉ tên, không kèm liều lượng)",
-      "dosage": "liều lượng (ví dụ: 500mg, 1 viên)",
-      "frequency": "tần suất (ví dụ: 2 lần/ngày, ngày 1 lần)",
+      "name": "tên thuốc (chỉ tên, không kèm liều)",
+      "dosage": "hàm lượng mỗi viên (vd: 500mg, 30mg)",
+      "quantity": "tổng số lượng kê (vd: 60 viên, 2 hộp), hoặc null",
+      "amountPerDose": "lượng mỗi lần uống (vd: 1 viên, nửa viên)",
+      "timesPerDay": <số lần uống trong 1 ngày, kiểu số>,
+      "frequency": "mô tả tần suất (vd: 2 lần/ngày, sáng-tối)",
       "times": ["07:00"],
-      "instructions": "cách dùng (trước ăn / sau ăn / v.v.)",
-      "doctor_name": null
+      "instructions": "cách dùng: trước ăn / sau ăn / trước ngủ ...",
+      "isDiabetesDrug": <true nếu là thuốc hạ đường huyết, false nếu thuốc hỗ trợ khác>,
+      "detail": {
+        "purpose": "công dụng: thuốc này dùng để làm gì cho bệnh nhân tiểu đường",
+        "mechanism": "cơ chế / giải quyết vấn đề gì (vd: giảm đường huyết bằng cách...)",
+        "sideEffects": "tác dụng phụ thường gặp cần lưu ý",
+        "source": "nguồn tham khảo uy tín (vd: Hiệp hội Đái tháo đường Hoa Kỳ ADA, Mayo Clinic, Vinmec, MedlinePlus)"
+      }
     }
-  ],
-  "doctorName": "tên bác sĩ nếu đọc được hoặc null",
-  "prescriptionDate": "YYYY-MM-DD hoặc null",
-  "notes": "ghi chú nếu có hoặc null"
+  ]
 }
 
-Quy tắc trường "times" (mảng giờ HH:MM):
-- Buổi sáng → "07:00"
-- Buổi trưa → "12:00"
-- Buổi chiều → "15:00"
-- Buổi tối → "19:00"
-- Trước ngủ / buổi đêm → "22:00"
-- Nếu không rõ → []
+Quy tắc "times" (mảng giờ HH:MM, suy ra từ timesPerDay và lời dặn):
+- Sáng → "07:00" | Trưa → "12:00" | Chiều → "15:00" | Tối → "19:00" | Trước ngủ/đêm → "22:00"
+- Nếu không rõ giờ nhưng biết số lần/ngày, hãy phân bổ hợp lý. Nếu hoàn toàn không rõ → [].
 
-Nếu ảnh quá mờ hoặc không phải đơn thuốc, trả về: {"medications":[],"error":"Không thể đọc ảnh đơn thuốc"}`,
-        },
-      ],
-    }],
-  });
+Phần "detail" PHẢI điền cho MỌI thuốc, nội dung dựa trên kiến thức y khoa chuẩn từ nguồn uy tín, viết bằng tiếng Việt dễ hiểu cho bệnh nhân.
 
-  let parsed;
-  try {
-    const text = response.content[0].text.trim();
-    const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
-    parsed = JSON.parse(jsonMatch ? jsonMatch[1].trim() : text);
-  } catch {
-    return { medications: [], hasDiabetesDrugs: false, diabetesDrugs: [], error: 'Không thể phân tích kết quả' };
-  }
+Nếu ảnh quá mờ không đọc được: {"isPrescription": false, "isDiabetesPrescription": false, "rejectionReason": null, "medications": [], "error": "Không thể đọc ảnh đơn thuốc, vui lòng chụp rõ hơn"}`;
 
+function shapeResult(parsed) {
+  const isPrescription = parsed.isPrescription !== false;
   const medications = parsed.medications || [];
-  const diabetesDrugs = medications.filter(m => isDiabetesDrug(m.name)).map(m => m.name);
+
+  const keywordDiabetes = medications.some(m => isDiabetesDrug(m.name));
+  const isDiabetesPrescription =
+    parsed.isDiabetesPrescription === true || (parsed.isDiabetesPrescription == null && keywordDiabetes);
+
+  const diabetesDrugs = medications
+    .filter(m => m.isDiabetesDrug === true || isDiabetesDrug(m.name))
+    .map(m => m.name);
 
   return {
-    medications,
+    isPrescription,
+    isDiabetesPrescription,
+    rejectionReason: parsed.rejectionReason || null,
+    medications: isDiabetesPrescription ? medications : [],
     hasDiabetesDrugs: diabetesDrugs.length > 0,
     diabetesDrugs,
     doctorName: parsed.doctorName || null,
     prescriptionDate: parsed.prescriptionDate || null,
-    notes: parsed.notes || null,
+    diagnosis: parsed.diagnosis || null,
+    doctorNotes: parsed.doctorNotes || parsed.notes || null,
     error: parsed.error || null,
   };
 }
 
-module.exports = { analyzePrescription };
+function parseAiJson(text) {
+  const trimmed = text.trim();
+  const jsonMatch = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/);
+  return JSON.parse(jsonMatch ? jsonMatch[1].trim() : trimmed);
+}
+
+async function analyzePrescription(imageBuffer, mimeType) {
+  if (!process.env.GEMINI_API_KEY) {
+    const err = new Error('GEMINI_API_KEY chưa được cấu hình trong file .env');
+    err.status = 503;
+    throw err;
+  }
+
+  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+
+  const result = await model.generateContent([
+    { inlineData: { data: imageBuffer.toString('base64'), mimeType } },
+    PROMPT,
+  ]);
+
+  let parsed;
+  try {
+    parsed = parseAiJson(result.response.text());
+  } catch {
+    return {
+      isPrescription: false,
+      isDiabetesPrescription: false,
+      medications: [],
+      hasDiabetesDrugs: false,
+      diabetesDrugs: [],
+      error: 'Không thể phân tích kết quả',
+    };
+  }
+
+  return shapeResult(parsed);
+}
+
+module.exports = { analyzePrescription, shapeResult, parseAiJson, isDiabetesDrug };

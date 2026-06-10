@@ -1,5 +1,8 @@
 import { useState, useCallback } from 'react';
-import { CheckCircle, AlertCircle, Pill, User, Calendar, FileText, Lock, Crown } from 'lucide-react';
+import {
+  CheckCircle, AlertCircle, Pill, User, Calendar, FileText, Lock, Crown,
+  XCircle, ChevronDown, ChevronUp, Clock, Hash, Stethoscope, BookOpen, Info,
+} from 'lucide-react';
 import { scanService } from '../services/scan.service';
 import { medicationsService } from '../services/medications.service';
 import { useMedications } from '../hooks/useMedications';
@@ -20,6 +23,7 @@ export default function ScanPrescriptionPage() {
   const [result, setResult] = useState(null);
   const [savedIndices, setSavedIndices] = useState(new Set());
   const [savingIndex, setSavingIndex] = useState(null);
+  const [expandedIndex, setExpandedIndex] = useState(null);
 
   const handleImageScan = useCallback((file) => {
     if (imageUrl) URL.revokeObjectURL(imageUrl);
@@ -27,6 +31,7 @@ export default function ScanPrescriptionPage() {
     setImageUrl(URL.createObjectURL(file));
     setResult(null);
     setSavedIndices(new Set());
+    setExpandedIndex(null);
   }, [imageUrl]);
 
   const handleAnalyze = useCallback(async () => {
@@ -34,9 +39,12 @@ export default function ScanPrescriptionPage() {
     setIsAnalyzing(true);
     try {
       const res = await scanService.analyzePrescription(imageFile);
-      setResult(res.data.data);
-      if (res.data.data.error) {
-        showToast(res.data.data.error, 'error');
+      const data = res.data.data;
+      setResult(data);
+      if (data.error) {
+        showToast(data.error, 'error');
+      } else if (!data.isDiabetesPrescription) {
+        showToast('Đơn thuốc không thuộc bệnh đái tháo đường', 'error');
       }
     } catch (err) {
       const msg = err.response?.data?.message || 'Lỗi kết nối đến server';
@@ -75,6 +83,7 @@ export default function ScanPrescriptionPage() {
     setImageUrl(null);
     setResult(null);
     setSavedIndices(new Set());
+    setExpandedIndex(null);
   }, [imageUrl]);
 
   if (isFree) {
@@ -140,17 +149,35 @@ export default function ScanPrescriptionPage() {
             </div>
           </div>
 
-          {result && (
+          {result && !result.isDiabetesPrescription && !result.error && (
             <div className={styles.results}>
-              {result.hasDiabetesDrugs && (
-                <div className={styles.diabetesBanner}>
-                  <AlertCircle size={20} />
-                  <div>
-                    <strong>Phát hiện thuốc điều trị tiểu đường</strong>
-                    <p>{result.diabetesDrugs.join(', ')}</p>
-                  </div>
+              <div className={styles.rejectBanner}>
+                <div className={styles.rejectIcon}>
+                  <XCircle size={40} />
                 </div>
-              )}
+                <strong>Không tiếp nhận đơn thuốc này</strong>
+                <p>
+                  {result.rejectionReason ||
+                    (result.isPrescription
+                      ? 'Đây không phải đơn thuốc điều trị đái tháo đường (tiểu đường). DIA+ chỉ hỗ trợ phân tích đơn thuốc tiểu đường.'
+                      : 'Ảnh không phải là một đơn thuốc. Vui lòng chụp lại đơn thuốc đái tháo đường.')}
+                </p>
+              </div>
+              <button onClick={handleRetake} className={styles.scanAgainBtn}>
+                Quét đơn thuốc khác
+              </button>
+            </div>
+          )}
+
+          {result && result.isDiabetesPrescription && (
+            <div className={styles.results}>
+              <div className={styles.diabetesBanner}>
+                <CheckCircle size={20} />
+                <div>
+                  <strong>Đơn thuốc điều trị đái tháo đường</strong>
+                  <p>{result.diagnosis || `${result.medications.length} thuốc được nhận diện`}</p>
+                </div>
+              </div>
 
               {(result.doctorName || result.prescriptionDate) && (
                 <div className={styles.metaRow}>
@@ -167,37 +194,57 @@ export default function ScanPrescriptionPage() {
                 </div>
               )}
 
-              {result.medications.length === 0 && !result.error && (
+              {result.doctorNotes && (
+                <div className={styles.notesCard}>
+                  <h3><Stethoscope size={15} /> Lời dặn của bác sĩ</h3>
+                  <p>{result.doctorNotes}</p>
+                </div>
+              )}
+
+              {result.medications.length === 0 ? (
                 <div className={styles.emptyResult}>
                   <FileText size={32} />
                   <p>Không tìm thấy thuốc trong ảnh. Vui lòng thử ảnh rõ hơn.</p>
                 </div>
-              )}
-
-              {result.medications.length > 0 && (
+              ) : (
                 <div className={styles.medicationsList}>
                   <h2>
                     <Pill size={16} />
-                    {result.medications.length} thuốc được nhận diện
+                    {result.medications.length} loại thuốc
                   </h2>
                   {result.medications.map((med, i) => {
                     const saved = savedIndices.has(i);
                     const saving = savingIndex === i;
+                    const expanded = expandedIndex === i;
+                    const detail = med.detail || {};
+                    const hasDetail = detail.purpose || detail.mechanism || detail.sideEffects;
                     return (
                       <div key={i} className={`${styles.medCard} ${saved ? styles.medCardSaved : ''}`}>
                         <div className={styles.medHeader}>
-                          <span className={styles.medName}>{med.name}</span>
+                          <span className={styles.medName}>
+                            {med.name}
+                            {med.isDiabetesDrug && <span className={styles.diaTag}>Hạ đường huyết</span>}
+                          </span>
                           {med.dosage && <span className={styles.medDosage}>{med.dosage}</span>}
                         </div>
-                        {med.frequency && (
-                          <div className={styles.medDetail}>
-                            <span className={styles.detailLabel}>Tần suất</span>
-                            <span>{med.frequency}</span>
-                          </div>
-                        )}
+
+                        <div className={styles.medStats}>
+                          {med.quantity && (
+                            <span className={styles.statChip}><Hash size={12} /> {med.quantity}</span>
+                          )}
+                          {med.timesPerDay != null && (
+                            <span className={styles.statChip}>
+                              <Clock size={12} /> {med.timesPerDay} lần/ngày
+                            </span>
+                          )}
+                          {med.amountPerDose && (
+                            <span className={styles.statChip}><Pill size={12} /> {med.amountPerDose}/lần</span>
+                          )}
+                        </div>
+
                         {med.times && med.times.length > 0 && (
                           <div className={styles.medDetail}>
-                            <span className={styles.detailLabel}>Thời điểm</span>
+                            <span className={styles.detailLabel}>Thời điểm uống</span>
                             <span>{med.times.join(', ')}</span>
                           </div>
                         )}
@@ -207,6 +254,44 @@ export default function ScanPrescriptionPage() {
                             <span>{med.instructions}</span>
                           </div>
                         )}
+
+                        {hasDetail && (
+                          <button
+                            className={styles.detailToggle}
+                            onClick={() => setExpandedIndex(expanded ? null : i)}
+                          >
+                            <span><Info size={14} /> Chi tiết về thuốc</span>
+                            {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                          </button>
+                        )}
+                        {expanded && hasDetail && (
+                          <div className={styles.detailBox}>
+                            {detail.purpose && (
+                              <div className={styles.detailItem}>
+                                <span className={styles.detailItemLabel}>Công dụng</span>
+                                <p>{detail.purpose}</p>
+                              </div>
+                            )}
+                            {detail.mechanism && (
+                              <div className={styles.detailItem}>
+                                <span className={styles.detailItemLabel}>Giải quyết vấn đề gì</span>
+                                <p>{detail.mechanism}</p>
+                              </div>
+                            )}
+                            {detail.sideEffects && (
+                              <div className={styles.detailItem}>
+                                <span className={styles.detailItemLabel}>Tác dụng phụ cần lưu ý</span>
+                                <p>{detail.sideEffects}</p>
+                              </div>
+                            )}
+                            {detail.source && (
+                              <div className={styles.detailSource}>
+                                <BookOpen size={12} /> Nguồn: {detail.source}
+                              </div>
+                            )}
+                          </div>
+                        )}
+
                         <button
                           className={saved ? styles.savedBtn : styles.addBtn}
                           onClick={() => !saved && handleSaveOne(med, i)}
@@ -222,8 +307,25 @@ export default function ScanPrescriptionPage() {
                 </div>
               )}
 
+              <p className={styles.disclaimer}>
+                <AlertCircle size={12} /> Thông tin do AI tổng hợp, chỉ mang tính tham khảo.
+                Luôn tuân theo chỉ định của bác sĩ điều trị.
+              </p>
+
               <button onClick={handleRetake} className={styles.scanAgainBtn}>
                 Quét đơn thuốc khác
+              </button>
+            </div>
+          )}
+
+          {result && result.error && (
+            <div className={styles.results}>
+              <div className={styles.emptyResult}>
+                <FileText size={32} />
+                <p>{result.error}</p>
+              </div>
+              <button onClick={handleRetake} className={styles.scanAgainBtn}>
+                Chụp lại
               </button>
             </div>
           )}
