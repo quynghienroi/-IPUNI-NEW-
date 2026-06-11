@@ -3,24 +3,40 @@ import useMetricsStore from '../store/metricsStore';
 import { metricsService } from '../services/metrics.service';
 
 export function useMetrics() {
-  const { metrics, latestMetrics, loading, setMetrics, setLatestMetrics, setLoading } = useMetricsStore();
+  const { metrics, latestMetrics, statistics, loading, setMetrics, setLatestMetrics, setStatistics, setLoading } = useMetricsStore();
 
-  const fetchMetrics = useCallback(async (type, days = 7) => {
+  const fetchMetrics = useCallback(async (measurementType, days = 7) => {
     setLoading(true);
     try {
-      const res = await metricsService.getMetrics(type, days);
+      const res = await metricsService.getMetrics(measurementType, days);
       setMetrics(res.data.data);
+    } catch (err) {
+      console.error('Error fetching metrics:', err);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [setMetrics, setLoading]);
 
   const fetchLatest = useCallback(async () => {
     try {
       const res = await metricsService.getLatest();
       setLatestMetrics(res.data.data);
-    } catch {}
-  }, []);
+    } catch (err) {
+      console.error('Error fetching latest metrics:', err);
+    }
+  }, [setLatestMetrics]);
+
+  const fetchStatistics = useCallback(async (measurementType, days = 90) => {
+    setLoading(true);
+    try {
+      const res = await metricsService.getStatistics(measurementType, days);
+      setStatistics(res.data.data);
+    } catch (err) {
+      console.error('Error fetching statistics:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [setStatistics, setLoading]);
 
   const addMetric = async (data) => {
     const res = await metricsService.create(data);
@@ -31,5 +47,15 @@ export function useMetrics() {
     await metricsService.delete(id);
   };
 
-  return { metrics, latestMetrics, loading, fetchMetrics, fetchLatest, addMetric, removeMetric };
+  return {
+    metrics,
+    latestMetrics,
+    statistics,
+    loading,
+    fetchMetrics,
+    fetchLatest,
+    fetchStatistics,
+    addMetric,
+    removeMetric
+  };
 }

@@ -112,6 +112,34 @@
   color: var(--color-text-secondary);
 }
 
+.headerTop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.headerTop h1 {
+  margin: 0;
+}
+
+.limitBadge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: white;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.limitWarning {
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+}
+
 .imagePreview {
   position: relative;
   border-radius: 12px;

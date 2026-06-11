@@ -40,12 +40,33 @@ const lo = {
     days30: '30 ວັນ',
     noData: 'ຍັງບໍ່ມີຂໍ້ມູນ',
     noDataSubtitle: 'ກະລຸນາເພີ່ມຕົວຊີ້ວັດທຳອິດ.',
+    glucoseLabel: 'ນ້ຳຕານ',
+    hba1cLabel: 'HbA1c',
     types: {
-      fasting: 'ນ້ຳຕານຂະໜາດອົດ',
-      post_meal_2h: 'ນ້ຳຕານຫຼັງກິນ 2h',
-      pre_meal: 'ນ້ຳຕານກ່ອນກິນ',
-      pre_sleep: 'ນ້ຳຕານກ່ອນນອນ',
+      glucose_random: 'ນ້ຳຕານແບບສຸ່ມ',
+      glucose_fasting: 'ນ້ຳຕານຂະໜາດອົດ',
+      glucose_postmeal: 'ນ້ຳຕານຫຼັງກິນ 2h',
+      hba1c: 'HbA1c (ສະເລ່ຍ 3 ເດືອນ)',
     },
+    thresholds: {
+      fasting: 'ປົກກະຕິ: <7 mmol/L | ອັນຕະລາຍ: >10 mmol/L',
+      post_meal_2h: 'ປົກກະຕິ: <7.8 mmol/L | ອັນຕະລາຍ: >11.1 mmol/L',
+      pre_meal: 'ປົກກະຕິ: 4.4-7.2 mmol/L | ອັນຕະລາຍ: >10 mmol/L',
+      pre_sleep: 'ປົກກະຕິ: 5.0-8.3 mmol/L | ອັນຕະລາຍ: >10 mmol/L',
+    },
+    statusLow: 'ນ້ຳຕານຕ່ຳ',
+    statusNormal: 'ປົກກະຕິ',
+    statusWarning: 'ເຕືອນ',
+    statusDanger: 'ອັນຕະລາຍ',
+    statusPrediabetes: 'ກ່ອນເປັນເບົາຫວານ',
+    hypoglycemia: 'ນ້ຳຕານຕ່ຳ (<3.9 mmol/L)',
+    statisticsTitle: 'ສະຖິຕິ',
+    average: 'ສະເລ່ຍ',
+    minimum: 'ຕ່ຳສຸດ',
+    maximum: 'ສູງສຸດ',
+    readingCount: 'ຈຳນວນ',
+    estimatedHbA1c: 'HbA1c ໂດຍປະມານ',
+    estimatedNote: '(ຄວາມຜິດພາດ ±15-20%)',
   },
 
   // Add metric modal
@@ -81,12 +102,22 @@ const lo = {
     noAppointmentsSubtitle: 'ທ່ານໝໍຈະນັດໝາຍຫຼັງຈາກກວດ.',
     noDoctorNotes: 'ຍັງບໍ່ມີຄຳແນະນຳ',
     noDoctorNotesSubtitle: 'ທ່ານໝໍຈະຂຽນຄຳແນະນຳຫຼັງຈາກກວດ.',
+    statusUpcoming: 'ກຳລັງມາ',
+    statusCompleted: 'ສຳເລັດ',
+    statusCancelled: 'ຍົກເລີກ',
+    doctorNote: 'ຫມາຍເຫດຂອງທ່ານໝໍ',
+    retakeSchedule: 'ນັດໝາຍຕິດຕາມ',
   },
 
   // Advice page
   advice: {
     title: 'ຄຳແນະນຳສຸຂະພາບ',
     subtitle: 'ຄຳແນະນຳດ້ານອາຫານແລະວິຖີຊີວິດ',
+    allAdvice: 'ທັງໝົດ',
+    shouldEat: 'ອາຫານທີ່ບໍ່ຄວນກິນ',
+    shouldAvoid: 'ອາຫານທີ່ຄວນຫຼີກ',
+    exercise: 'ອອກກຳລັງກາຍ',
+    danger: 'ການເຕືອນ',
   },
 
   // Auth
@@ -169,6 +200,7 @@ const lo = {
 
   // Days of week
   days: ['ວັນອາທິດ', 'ວັນຈັນ', 'ວັນອັງຄານ', 'ວັນພຸດ', 'ວັນພະຫັດ', 'ວັນສຸກ', 'ວັນເສົາ'],
+  months: ['ມกະລະຄົມ', 'ກຸມພະ', 'ມີນາ', 'ເມສາ', 'ພຶດສະພາ', 'ມິຖຸນາ', 'ກໍລະກົດ', 'ສິງຫາ', 'ກັນຍາ', 'ຕຸລາ', 'ພະຈິກ', 'ທັນວາ'],
   dateFormat: (d, m, y) => `${d}/${m}/${y}`,
 };
 

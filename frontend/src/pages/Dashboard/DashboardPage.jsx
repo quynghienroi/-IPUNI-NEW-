@@ -49,7 +49,7 @@ export default function DashboardPage() {
   useEffect(() => {
     fetchLatest();
     fetchToday();
-  }, []);
+  }, [fetchLatest, fetchToday]);
 
   const handleSave = async (data) => {
     await addMetric(data);

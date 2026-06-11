@@ -16,7 +16,7 @@ export function useAuth() {
         })
         .catch(() => storeLogout());
     }
-  }, [token]);
+  }, [token, user, setUser, applyPlanTheme, storeLogout]);
 
   const login = async (identifier, password) => {
     const res = await authService.login(identifier, password);

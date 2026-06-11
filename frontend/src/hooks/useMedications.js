@@ -13,14 +13,14 @@ export function useMedications() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [setMedications, setLoading]);
 
   const fetchToday = useCallback(async () => {
     try {
       const res = await medicationsService.getToday();
       setTodayMedications(res.data.data);
     } catch {}
-  }, []);
+  }, [setTodayMedications]);
 
   return { medications, todayMedications, loading, fetchMedications, fetchToday };
 }

@@ -33,32 +33,14 @@ const PLANS = [
     badge: 'Phổ biến',
     features: [
       'Tất cả tính năng Free',
-      'Quét đơn thuốc bằng AI',
+      'Quét đơn thuốc bằng AI (không giới hạn)',
       'Biểu đồ HbA1c & xu hướng',
       'Nhắc uống thuốc thông minh',
-      'Mở khóa A-Styles (100+ giao diện và khung avatar)',
-    ],
-    locked: [
-      'Tư vấn dinh dưỡng AI',
-      'Đồng bộ thiết bị đo',
-    ],
-  },
-  {
-    key: 'premium',
-    name: 'Premium',
-    price: '99.000đ',
-    amount: 99000,
-    period: 'tháng',
-    current: false,
-    color: 'premium',
-    badge: 'Sắp ra mắt',
-    features: [
-      'Tất cả tính năng Pro',
       'Tư vấn dinh dưỡng AI',
       'Đồng bộ thiết bị đo',
       'Chia sẻ với bác sĩ',
       'Hỗ trợ ưu tiên 24/7',
-      'S-Styles: Mở khóa toàn bộ',
+      'Mở khóa tất cả A-Styles (100+ giao diện & avatar)',
     ],
     locked: [],
   },
@@ -223,10 +205,10 @@ export default function UpgradeModal({ onClose }) {
 
               <button
                 className={`${styles.planBtn} ${p.current ? styles.planBtnCurrent : styles[`planBtn_${p.color}`]}`}
-                disabled={p.current || p.key === 'premium'}
-                onClick={() => !p.current && p.key !== 'premium' && setPayingPlan(p)}
+                disabled={p.current}
+                onClick={() => !p.current && setPayingPlan(p)}
               >
-                {p.current ? 'Gói hiện tại' : p.key === 'premium' ? 'Sắp ra mắt' : 'Nâng cấp ngay'}
+                {p.current ? 'Gói hiện tại' : 'Nâng cấp ngay'}
               </button>
             </div>
           ))}

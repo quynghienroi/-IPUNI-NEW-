@@ -10,7 +10,7 @@ import Button from '../../components/common/Button';
 import styles from './MetricsPage.module.css';
 
 export default function MetricsPage() {
-  const [activeType, setActiveType] = useState('fasting');
+  const [activeType, setActiveType] = useState('glucose_random');
   const [days, setDays] = useState(7);
   const [showModal, setShowModal] = useState(false);
   const { metrics, loading, fetchMetrics, addMetric, removeMetric } = useMetrics();

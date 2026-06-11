@@ -1,5 +1,6 @@
 import { Trash2 } from 'lucide-react';
 import { METRIC_TYPES, getMetricStatus } from '../../constants/metrics';
+import { useT } from '../../hooks/useT';
 
 const STATUS_COLORS = {
   normal: '#22C55E',
@@ -8,21 +9,23 @@ const STATUS_COLORS = {
   low: '#7C3AED'
 };
 
-const STATUS_LABELS = {
-  normal: 'Bình thường',
-  warning: 'Chú ý',
-  danger: 'Nguy hiểm',
-  low: 'Hạ đường huyết'
-};
-
 export default function MetricHistoryItem({ metric, onDelete }) {
-  const meta = METRIC_TYPES[metric.type];
+  const t = useT();
+  const typeLabel = t.metrics?.types?.[metric.type] || metric.type;
   const status = getMetricStatus(metric.type, metric.value);
   const color = STATUS_COLORS[status];
 
+  const statusLabels = {
+    normal: t.metrics?.statusNormal || 'Normal',
+    warning: t.metrics?.statusWarning || 'Warning',
+    danger: t.metrics?.statusDanger || 'Danger',
+    low: t.metrics?.statusLow || 'Low'
+  };
+
   const dt = new Date(metric.measured_at);
-  const timeStr = dt.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Ho_Chi_Minh' });
-  const dateStr = dt.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'Asia/Ho_Chi_Minh' });
+  const pad = (n) => String(n).padStart(2, '0');
+  const timeStr = `${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+  const dateStr = `${pad(dt.getDate())}/${pad(dt.getMonth() + 1)}/${dt.getFullYear()}`;
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid #F1F5F9', gap: 12 }}>
@@ -32,11 +35,11 @@ export default function MetricHistoryItem({ metric, onDelete }) {
           <span style={{ fontSize: 18, fontWeight: 800, color: '#1A2332' }}>{metric.value}</span>
           <span style={{ fontSize: 12, color: '#6B7A8D' }}>mmol/L</span>
           <span style={{ fontSize: 11, fontWeight: 600, color, marginLeft: 4, background: `${color}18`, padding: '2px 7px', borderRadius: 20 }}>
-            {STATUS_LABELS[status]}
+            {statusLabels[status]}
           </span>
         </div>
         <div style={{ fontSize: 12, color: '#6B7A8D', marginTop: 2 }}>
-          {meta?.label} · {timeStr} {dateStr}
+          {typeLabel} · {timeStr} {dateStr}
         </div>
         {metric.note && <div style={{ fontSize: 12, color: '#6B7A8D', marginTop: 2, fontStyle: 'italic' }}>{metric.note}</div>}
       </div>

@@ -11,7 +11,7 @@ function formatDate(dateStr) {
 }
 
 export default function BloodGlucoseChart({ data = [], type, days, onDaysChange }) {
-  const meta = METRIC_TYPES[type] || METRIC_TYPES.fasting;
+  const meta = METRIC_TYPES[type] || METRIC_TYPES.glucose_random;
 
   const chartData = [...data]
     .sort((a, b) => new Date(a.measured_at) - new Date(b.measured_at))

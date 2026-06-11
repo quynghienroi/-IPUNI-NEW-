@@ -62,22 +62,33 @@ export default function UserMenu() {
     setIsOpen(false);
   };
 
+  const closeAllModals = () => {
+    setShowProfile(false);
+    setShowSettings(false);
+    setShowUpgrade(false);
+    setShowGiaoDien(false);
+  };
+
   const handleProfile = () => {
+    closeAllModals();
     setShowProfile(true);
     setIsOpen(false);
   };
 
   const handleSettings = () => {
+    closeAllModals();
     setShowSettings(true);
     setIsOpen(false);
   };
 
   const handleUpgrade = () => {
+    closeAllModals();
     setShowUpgrade(true);
     setIsOpen(false);
   };
 
   const handleGiaoDien = () => {
+    closeAllModals();
     setShowGiaoDien(true);
     setIsOpen(false);
   };

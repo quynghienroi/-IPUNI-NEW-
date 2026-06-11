@@ -6,7 +6,6 @@ export function usePlan() {
   return {
     plan,
     isFree: plan === 'free',
-    isPro: plan === 'pro' || plan === 'premium',
-    isPremium: plan === 'premium',
+    isPro: plan === 'pro',
   };
 }

@@ -1,37 +1,68 @@
 const db = require('../../config/database');
 const { daysAgo } = require('../../utils/date.helper');
+const MetricsCalculator = require('./metrics.calculator');
 
-async function getMetrics(userId, type, days = 7) {
-  const since = daysAgo(parseInt(days));
+async function getMetrics(userId, measurementType, measurementCategory, days = 7) {
+  const since = daysAgo(days);
+
   let query = db('metrics')
     .where({ user_id: userId })
     .where('measured_at', '>=', since)
     .orderBy('measured_at', 'desc');
-  if (type) query = query.where({ type });
+
+  if (measurementType) {
+    query = query.where({ measurement_type: measurementType });
+  }
+
+  if (measurementCategory) {
+    query = query.where({ measurement_category: measurementCategory });
+  }
+
   return query;
 }
 
-async function getLatestMetrics(userId) {
-  const types = ['fasting', 'post_meal_2h', 'pre_meal', 'pre_sleep'];
+async function getLatestByType(userId) {
+  const types = ['glucose_fasting', 'glucose_postmeal', 'glucose_random', 'hba1c'];
   const results = {};
+
   for (const type of types) {
     results[type] = await db('metrics')
-      .where({ user_id: userId, type })
+      .where({ user_id: userId, measurement_type: type })
       .orderBy('measured_at', 'desc')
       .first();
   }
+
   return results;
 }
 
 async function createMetric(userId, data) {
-  const [id] = await db('metrics').insert({ user_id: userId, ...data });
+  const [id] = await db('metrics').insert({
+    user_id: userId,
+    ...data
+  });
   return db('metrics').where({ id }).first();
 }
 
 async function deleteMetric(userId, id) {
   const metric = await db('metrics').where({ id, user_id: userId }).first();
-  if (!metric) throw { status: 404, message: 'Chỉ số không tồn tại' };
+  if (!metric) {
+    throw { status: 404, message: 'Metric not found' };
+  }
   await db('metrics').where({ id }).delete();
 }
 
-module.exports = { getMetrics, getLatestMetrics, createMetric, deleteMetric };
+/**
+ * Get statistics for a period
+ */
+async function getStatisticsForPeriod(userId, measurementType, days = 90) {
+  const readings = await getMetrics(userId, measurementType, null, days);
+  return MetricsCalculator.getStatistics(readings);
+}
+
+module.exports = {
+  getMetrics,
+  getLatestByType,
+  createMetric,
+  deleteMetric,
+  getStatisticsForPeriod
+};

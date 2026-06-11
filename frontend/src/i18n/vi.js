@@ -40,12 +40,33 @@ const vi = {
     days30: '30 ngày',
     noData: 'Chưa có dữ liệu',
     noDataSubtitle: 'Hãy nhập chỉ số đầu tiên của bạn.',
+    glucoseLabel: 'Glucose',
+    hba1cLabel: 'HbA1c',
     types: {
-      fasting: 'Đường huyết lúc đói',
-      post_meal_2h: 'Đường huyết sau ăn 2h',
-      pre_meal: 'Đường huyết trước ăn',
-      pre_sleep: 'Đường huyết trước ngủ',
+      glucose_random: 'Đường huyết ngẫu nhiên',
+      glucose_fasting: 'Đường huyết lúc đói',
+      glucose_postmeal: 'Đường huyết sau ăn 2h',
+      hba1c: 'HbA1c (Glucose 3 tháng)',
     },
+    thresholds: {
+      fasting: 'Bình thường: <7 mmol/L | Nguy hiểm: >10 mmol/L',
+      post_meal_2h: 'Bình thường: <7.8 mmol/L | Nguy hiểm: >11.1 mmol/L',
+      pre_meal: 'Bình thường: 4.4-7.2 mmol/L | Nguy hiểm: >10 mmol/L',
+      pre_sleep: 'Bình thường: 5.0-8.3 mmol/L | Nguy hiểm: >10 mmol/L',
+    },
+    statusLow: 'Hạ đường huyết',
+    statusNormal: 'Bình thường',
+    statusWarning: 'Cảnh báo',
+    statusDanger: 'Nguy hiểm',
+    statusPrediabetes: 'Tiền tiểu đường',
+    hypoglycemia: 'Hạ đường huyết (<3.9 mmol/L)',
+    statisticsTitle: 'Thống kê',
+    average: 'Trung bình',
+    minimum: 'Thấp nhất',
+    maximum: 'Cao nhất',
+    readingCount: 'Số lần',
+    estimatedHbA1c: 'Ước tính HbA1c',
+    estimatedNote: '(sai số ±15-20%)',
   },
 
   // Add metric modal
@@ -81,12 +102,22 @@ const vi = {
     noAppointmentsSubtitle: 'Bác sĩ sẽ đặt lịch tái khám cho bạn sau mỗi lần khám.',
     noDoctorNotes: 'Chưa có chỉ dẫn',
     noDoctorNotesSubtitle: 'Bác sĩ sẽ ghi chỉ dẫn cho bạn sau mỗi lần khám.',
+    statusUpcoming: 'Sắp tới',
+    statusCompleted: 'Đã khám',
+    statusCancelled: 'Đã hủy',
+    doctorNote: 'Ghi chú từ bác sĩ',
+    retakeSchedule: 'Tái khám định kỳ',
   },
 
   // Advice page
   advice: {
     title: 'Lời khuyên sức khỏe',
     subtitle: 'Hướng dẫn chế độ ăn và lối sống',
+    allAdvice: 'Tất cả',
+    shouldEat: 'Nên ăn',
+    shouldAvoid: 'Nên tránh',
+    exercise: 'Vận động',
+    danger: 'Nguy hiểm',
   },
 
   // Auth
@@ -169,6 +200,7 @@ const vi = {
 
   // Days of week
   days: ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'],
+  months: ['tháng 1', 'tháng 2', 'tháng 3', 'tháng 4', 'tháng 5', 'tháng 6', 'tháng 7', 'tháng 8', 'tháng 9', 'tháng 10', 'tháng 11', 'tháng 12'],
   dateFormat: (d, m, y) => `${d} tháng ${m} ${y}`,
 };
 

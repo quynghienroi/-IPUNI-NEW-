@@ -1,0 +1,72 @@
+.card {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  margin-bottom: 12px;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 12px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  background: var(--color-bg);
+  border-radius: var(--radius-sm);
+}
+
+.label {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+.value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.estimated {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px;
+  background: linear-gradient(135deg, var(--color-primary-light), var(--color-bg));
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--color-primary);
+}
+
+.hba1c {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.note {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.empty {
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  padding: 16px;
+}

@@ -23,8 +23,5 @@
   "bugs": {
     "url": "https://github.com/EoEmCay/IPUNI-NEW-/issues"
   },
-  "homepage": "https://github.com/EoEmCay/IPUNI-NEW-#readme",
-  "dependencies": {
-    "tesseract.js": "^7.0.0"
-  }
+  "homepage": "https://github.com/EoEmCay/IPUNI-NEW-#readme"
 }

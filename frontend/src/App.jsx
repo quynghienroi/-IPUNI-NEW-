@@ -26,7 +26,7 @@ function AppRoutes() {
         .then((res) => setUser(res.data.data))
         .catch(() => logout());
     }
-  }, []);
+  }, [token, isAuthenticated, setUser, logout]);
 
   return (
     <Routes>

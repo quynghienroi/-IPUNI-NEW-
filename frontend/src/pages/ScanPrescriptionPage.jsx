@@ -1,7 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   CheckCircle, AlertCircle, Pill, User, Calendar, FileText, Lock, Crown,
-  XCircle, ChevronDown, ChevronUp, Clock, Hash, Stethoscope, BookOpen, Info,
+  XCircle, ChevronDown, ChevronUp, Clock, Hash, Stethoscope, BookOpen, Info, Zap,
 } from 'lucide-react';
 import { scanService } from '../services/scan.service';
 import { medicationsService } from '../services/medications.service';
@@ -13,8 +13,9 @@ import ScanCamera from '../components/scan/ScanCamera';
 import styles from './ScanPrescriptionPage.module.css';
 
 export default function ScanPrescriptionPage() {
-  const { isFree } = usePlan();
+  const { isFree, isPro } = usePlan();
   const [showUpgrade, setShowUpgrade] = useState(false);
+  const [scansRemaining, setScansRemaining] = useState(null);
   const { fetchMedications } = useMedications();
   const { showToast } = useToast();
   const [imageFile, setImageFile] = useState(null);
@@ -36,11 +37,23 @@ export default function ScanPrescriptionPage() {
 
   const handleAnalyze = useCallback(async () => {
     if (!imageFile) return;
+
+    if (isFree && scansRemaining !== null && scansRemaining <= 0) {
+      setShowUpgrade(true);
+      showToast('Bạn đã dùng hết 3 lần chụp trong tháng này. Nâng cấp Pro để tiếp tục.', 'error');
+      return;
+    }
+
     setIsAnalyzing(true);
     try {
       const res = await scanService.analyzePrescription(imageFile);
       const data = res.data.data;
       setResult(data);
+
+      if (isFree && scansRemaining !== null) {
+        setScansRemaining(prev => Math.max(0, prev - 1));
+      }
+
       if (data.error) {
         showToast(data.error, 'error');
       } else if (!data.isDiabetesPrescription) {
@@ -48,11 +61,14 @@ export default function ScanPrescriptionPage() {
       }
     } catch (err) {
       const msg = err.response?.data?.message || 'Lỗi kết nối đến server';
+      if (msg.includes('hết')) {
+        setShowUpgrade(true);
+      }
       showToast(msg, 'error');
     } finally {
       setIsAnalyzing(false);
     }
-  }, [imageFile, showToast]);
+  }, [imageFile, showToast, isFree, scansRemaining]);
 
   const handleSaveOne = useCallback(async (med, index) => {
     setSavingIndex(index);
@@ -86,31 +102,11 @@ export default function ScanPrescriptionPage() {
     setExpandedIndex(null);
   }, [imageUrl]);
 
-  if (isFree) {
-    return (
-      <>
-        <div className={styles.lockedPage}>
-          <div className={styles.lockedIcon}>
-            <Lock size={36} />
-          </div>
-          <h2 className={styles.lockedTitle}>Tính năng Pro</h2>
-          <p className={styles.lockedDesc}>
-            Quét đơn thuốc bằng AI chỉ dành cho tài khoản <strong>Pro</strong> trở lên.
-          </p>
-          <div className={styles.lockedFeatures}>
-            <span>✓ Nhận diện thuốc tự động</span>
-            <span>✓ Lưu trực tiếp vào danh sách</span>
-            <span>✓ Hỗ trợ tiếng Việt</span>
-          </div>
-          <button className={styles.lockedBtn} onClick={() => setShowUpgrade(true)}>
-            <Crown size={16} />
-            Nâng cấp Pro
-          </button>
-        </div>
-        {showUpgrade && <UpgradeModal onClose={() => setShowUpgrade(false)} />}
-      </>
-    );
-  }
+  useEffect(() => {
+    if (isFree) {
+      setScansRemaining(3);
+    }
+  }, [isFree]);
 
   if (isAnalyzing) {
     return (
@@ -127,7 +123,15 @@ export default function ScanPrescriptionPage() {
   return (
     <div className={styles.page}>
       <div className={styles.header}>
-        <h1>Quét Đơn Thuốc</h1>
+        <div className={styles.headerTop}>
+          <h1>Quét Đơn Thuốc</h1>
+          {isFree && scansRemaining !== null && (
+            <div className={`${styles.limitBadge} ${scansRemaining <= 1 ? styles.limitWarning : ''}`}>
+              <Zap size={13} />
+              {scansRemaining} lần còn lại
+            </div>
+          )}
+        </div>
         <p>Chụp ảnh đơn thuốc để tự động nhận diện và lưu thuốc</p>
       </div>
 

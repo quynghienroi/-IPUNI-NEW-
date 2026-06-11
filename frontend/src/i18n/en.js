@@ -40,12 +40,33 @@ const en = {
     days30: '30 days',
     noData: 'No data yet',
     noDataSubtitle: 'Enter your first metric reading.',
+    glucoseLabel: 'Glucose',
+    hba1cLabel: 'HbA1c',
     types: {
-      fasting: 'Fasting Blood Glucose',
-      post_meal_2h: 'Post-meal (2h)',
-      pre_meal: 'Pre-meal',
-      pre_sleep: 'Before Sleep',
+      glucose_random: 'Random Blood Glucose',
+      glucose_fasting: 'Fasting Blood Glucose',
+      glucose_postmeal: 'Post-meal (2h)',
+      hba1c: 'HbA1c (3-month average)',
     },
+    thresholds: {
+      fasting: 'Normal: <7 mmol/L | Danger: >10 mmol/L',
+      post_meal_2h: 'Normal: <7.8 mmol/L | Danger: >11.1 mmol/L',
+      pre_meal: 'Normal: 4.4-7.2 mmol/L | Danger: >10 mmol/L',
+      pre_sleep: 'Normal: 5.0-8.3 mmol/L | Danger: >10 mmol/L',
+    },
+    statusLow: 'Low Blood Sugar',
+    statusNormal: 'Normal',
+    statusWarning: 'Warning',
+    statusDanger: 'Danger',
+    statusPrediabetes: 'Prediabetes',
+    hypoglycemia: 'Low Blood Sugar (<3.9 mmol/L)',
+    statisticsTitle: 'Statistics',
+    average: 'Average',
+    minimum: 'Min',
+    maximum: 'Max',
+    readingCount: 'Count',
+    estimatedHbA1c: 'Est. HbA1c',
+    estimatedNote: '(±15-20% accuracy)',
   },
 
   // Add metric modal
@@ -81,12 +102,22 @@ const en = {
     noAppointmentsSubtitle: 'Your doctor will schedule a follow-up after each visit.',
     noDoctorNotes: 'No doctor notes',
     noDoctorNotesSubtitle: 'Your doctor will add notes after each visit.',
+    statusUpcoming: 'Upcoming',
+    statusCompleted: 'Completed',
+    statusCancelled: 'Cancelled',
+    doctorNote: 'Doctor\'s Notes',
+    retakeSchedule: 'Follow-up Appointment',
   },
 
   // Advice page
   advice: {
     title: 'Health Advice',
     subtitle: 'Diet and lifestyle guidance',
+    allAdvice: 'All',
+    shouldEat: 'Foods to Eat',
+    shouldAvoid: 'Foods to Avoid',
+    exercise: 'Exercise',
+    danger: 'Alerts',
   },
 
   // Auth
@@ -169,6 +200,7 @@ const en = {
 
   // Days of week
   days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+  months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
   dateFormat: (d, m, y) => `${m}/${d}/${y}`,
 };
 

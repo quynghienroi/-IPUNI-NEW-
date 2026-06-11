@@ -1,17 +1,79 @@
+// Glucose & HbA1c measurement types and thresholds
+
 export const METRIC_TYPES = {
-  fasting: { label: 'Đường huyết lúc đói', normal: '<7 mmol/L', danger: '>10 mmol/L', normalMax: 7, dangerMin: 10 },
-  post_meal_2h: { label: 'Đường huyết sau ăn 2h', normal: '<7.8 mmol/L', danger: '>11.1 mmol/L', normalMax: 7.8, dangerMin: 11.1 },
-  pre_meal: { label: 'Đường huyết trước ăn', normal: '4.4-7.2 mmol/L', danger: '>10 mmol/L', normalMax: 7.2, dangerMin: 10 },
-  pre_sleep: { label: 'Đường huyết trước ngủ', normal: '5.0-8.3 mmol/L', danger: '>10 mmol/L', normalMax: 8.3, dangerMin: 10 }
+  glucose_random: { label: 'Đường huyết ngẫu nhiên', normalMax: 7.8, dangerMin: 11.1 },
+  glucose_fasting: { label: 'Đường huyết lúc đói', normalMax: 7, dangerMin: 10 },
+  glucose_postmeal: { label: 'Đường huyết sau ăn 2h', normalMax: 7.8, dangerMin: 11.1 },
+  hba1c: { label: 'HbA1c', normalMax: 5.7, dangerMin: 6.5 }
+};
+
+export const MEASUREMENT_TYPES = {
+  GLUCOSE_FASTING: 'glucose_fasting',
+  GLUCOSE_POSTMEAL: 'glucose_postmeal',
+  GLUCOSE_RANDOM: 'glucose_random',
+  HBAIC: 'hba1c'
+};
+
+export const MEASUREMENT_CATEGORIES = {
+  GLUCOSE: 'glucose',
+  HBAIC: 'hba1c'
+};
+
+export const METRIC_THRESHOLDS = {
+  glucose_fasting: {
+    normalMax: 5.6,
+    warningMin: 5.6,
+    warningMax: 6.9,
+    dangerMin: 7.0
+  },
+  glucose_postmeal: {
+    normalMax: 7.8,
+    warningMin: 7.8,
+    warningMax: 11.0,
+    dangerMin: 11.1
+  },
+  glucose_random: {
+    normalMax: 7.8,
+    dangerMin: 11.1
+  },
+  hba1c: {
+    normalMax: 5.7,
+    prediabetesMax: 6.4,
+    dangerMin: 6.5
+  }
 };
 
 export const HYPOGLYCEMIA_THRESHOLD = 3.9;
 
-export function getMetricStatus(type, value) {
-  const thresholds = METRIC_TYPES[type];
+export function getMetricStatus(measurementType, value) {
+  const thresholds = METRIC_THRESHOLDS[measurementType];
   if (!thresholds) return 'normal';
-  if (value < HYPOGLYCEMIA_THRESHOLD) return 'low';
-  if (value >= thresholds.dangerMin) return 'danger';
-  if (value > thresholds.normalMax) return 'warning';
+
+  // Glucose status
+  if (measurementType.includes('glucose')) {
+    if (value < HYPOGLYCEMIA_THRESHOLD) return 'low';
+    if (value >= thresholds.dangerMin) return 'danger';
+    if (value > thresholds.normalMax) return 'warning';
+    return 'normal';
+  }
+
+  // HbA1c status
+  if (measurementType === 'hba1c') {
+    if (value < thresholds.normalMax) return 'normal';
+    if (value <= thresholds.prediabetesMax) return 'prediabetes';
+    return 'danger';
+  }
+
   return 'normal';
+}
+
+export function getStatusLabel(status, t) {
+  const labels = {
+    low: t.metrics?.statusLow || 'Low',
+    normal: t.metrics?.statusNormal || 'Normal',
+    warning: t.metrics?.statusWarning || 'Warning',
+    danger: t.metrics?.statusDanger || 'Danger',
+    prediabetes: t.metrics?.statusPrediabetes || 'Prediabetes'
+  };
+  return labels[status] || status;
 }

@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+import { spawn } from 'child_process';
 
 export default defineConfig({
   plugins: [
@@ -21,7 +22,23 @@ export default defineConfig({
           { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' }
         ]
       }
-    })
+    }),
+    {
+      name: 'open-browser',
+      configResolved() {
+        if (process.env.NODE_ENV === 'development') {
+          setTimeout(() => {
+            spawn('cmd.exe', ['/c', 'start chrome http://localhost:5173 --incognito'], {
+              stdio: 'ignore',
+              detached: true
+            });
+          }, 1500);
+        }
+      }
+    }
   ],
-  server: { port: 5173, open: true }
+  server: {
+    port: 5173,
+    open: false
+  }
 });

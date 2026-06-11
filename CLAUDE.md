@@ -47,7 +47,7 @@ NODE_ENV=development
 |---|---|---|
 | khoi@example.com | 123456 | Bệnh nhân (type2_diabetes) |
 
-Đăng nhập bằng email **hoặc** CCCD. Token lưu tại `localStorage['ipuni_token']`.
+Đăng nhập bằng email **hoặc** CCCD. Token lưu tại `localStorage['diaplus_token']`.
 
 ---
 
@@ -233,6 +233,11 @@ ipuni/
 | POST | `/auth/register` | ✗ | cccd + phone + password |
 | GET | `/auth/me` | ✓ | Lấy thông tin user hiện tại |
 | POST | `/auth/logout` | ✓ | Logout |
+
+### Scan Prescription (`/scan`)
+| Method | Path | Mô tả |
+|---|---|---|
+| POST | `/scan/prescription` | Upload ảnh đơn thuốc, AI phân tích (Gemini/Anthropic) |
 
 ### Metrics (`/metrics`)
 | Method | Path | Mô tả |
@@ -421,16 +426,108 @@ z-index: 0     → CuteBackground
 - [x] Trang Thông Tin (BHYT card style)
 - [x] Cute Mode (theme switching, persistent localStorage)
 - [x] PWA manifest (installable)
+- [x] AI Prescription Scanning (Gemini API + Anthropic SDK)
+- [x] i18n support (VI/EN/LO)
 
 ## 15. Tính năng chưa hoàn thành / cần làm tiếp
 
-- [ ] **Scan đơn thuốc** (`ScanPrescriptionPage.jsx`) — Camera đã có khung, chưa có OCR logic
 - [ ] **Cài Đặt → Nhắc đo đường huyết** — UI có, logic notification chưa implement
 - [ ] **Cài Đặt → Quyền riêng tư** — placeholder "Sắp ra mắt"
 - [ ] **Profile update** — `UserProfileModal` chỉ hiển thị, chưa có form chỉnh sửa
 - [ ] **BHYT fields** (insuranceNumber, bloodType, allergies) — chưa có trong DB schema
 - [ ] **Push notification** — nhắc uống thuốc, nhắc đo đường huyết
 - [ ] **Offline mode** — PWA đã cấu hình nhưng chưa test cache strategy
+
+## 16. Hệ Thống 2 Plan (Pricing)
+
+### Free Plan
+- ✅ Theo dõi chỉ số đường huyết
+- ✅ Quản lý thuốc cơ bản
+- ✅ Lịch hẹn bác sĩ
+- ✅ Lời khuyên sức khỏe
+- ✅ Cute Mode
+- **⚠️ Giới hạn:** Quét đơn thuốc tối đa **3 lần/tháng**
+
+### Pro Plan (49.000đ/tháng)
+- ✅ Tất cả tính năng Free
+- ✅ Quét đơn thuốc **không giới hạn**
+- ✅ Biểu đồ HbA1c & xu hướng
+- ✅ Nhắc uống thuốc thông minh
+- ✅ Tư vấn dinh dưỡng AI
+- ✅ Đồng bộ thiết bị đo
+- ✅ Chia sẻ với bác sĩ
+- ✅ Hỗ trợ ưu tiên 24/7
+- ✅ Mở khóa tất cả A-Styles (100+ giao diện & avatar)
+
+### Implementation Details
+- **Database:** Column `plan` trong `users` (default: 'free')
+- **Tracking:** Table `scan_usages` ghi lại mỗi lần scan (user_id, scanned_at, result)
+- **Backend Logic:** Controller check plan + count scans trong tháng hiện tại
+- **Frontend UI:** Badge hiển thị "X lần còn lại", color warning khi ≤ 1 lần
+- **Payment:** QR code Techcombank (STK: 30068889999), content: `<user_code> - NANG CAP DIA+ <plan_name>`
+
+## 17. i18n Implementation Progress (v1.3.0)
+
+### ✅ Hoàn thành
+- [x] Metric status labels (low, normal, warning, danger)
+- [x] Metric type labels & thresholds
+- [x] Appointment status labels
+- [x] Advice page category labels
+- [x] Date formatting (days + months arrays)
+- [x] MetricCard component → using i18n
+- [x] AppointmentCard component → using i18n
+- [x] Translation files: vi.js, en.js, lo.js
+
+### 🔄 Đang tiến hành
+- [ ] **PRIORITY 1** - Critical components:
+  1. **BloodGlucoseChart.jsx** - Status labels, time labels ("7 ngày", "14 ngày", "30 ngày")
+  2. **MetricHistoryItem.jsx** - Status labels + date formatting
+  3. **ScanPrescriptionPage.jsx** - 20+ strings (detail labels, error messages, buttons)
+  4. **AdvicePage.jsx** - Category filter labels
+
+- [ ] **PRIORITY 2** - UI components:
+  1. **UpgradeModal.jsx** - 40+ strings (features, payment UI, buttons)
+  2. **UserProfileModal.jsx** - Form labels, section titles, placeholders
+  3. **AlertBanner.jsx** - Alert status text
+  4. **MedicationCard.jsx** - Button text ("Đã uống")
+  5. **TopBar.jsx** - Tooltip text
+
+- [ ] **PRIORITY 3** - Pages & modals:
+  1. **ScanCamera.jsx** - Button labels, descriptions
+  2. **SettingsModal.jsx** - Already using i18n (check for fallbacks)
+  3. **RegisterPage.jsx** - Already using i18n (check for fallbacks)
+
+### Remaining hardcoded Vietnamese text:
+**Total: ~80+ strings** across 15+ files
+
+### How to complete:
+1. Use `useT()` hook: `const t = useT()`
+2. Replace hardcoded strings: `"Tiếng Việt"` → `t.language?.vietnamese || 'Vietnamese'`
+3. Add new translation keys to: `vi.js`, `en.js`, `lo.js`
+4. Test by switching languages in Settings
+
+---
+
+## 18. Thay đổi gần đây (v1.1.0 & v1.2.0)
+
+### Cập nhật Frontend (v1.1.0)
+- ✅ Favicon: `dia.jpg` trên tab browser
+- ✅ Title: Sửa từ "DIA+ - Theo dõi tiểu đường" → "DIA+"
+- ✅ Package.json đã cài xong: Vite, React 19, Recharts, Zustand, axios
+
+### Cập nhật Backend (v1.1.0)
+- ✅ Module `scan` hoàn thành: POST `/api/v1/scan/prescription` dùng Gemini/Anthropic AI
+- ✅ Module `users` support
+- ✅ Token key: `diaplus_token` (thay vì `ipuni_token`)
+
+### Cập nhật v1.2.0 — Pricing & Limits
+- ✅ Backend: Migration `011_create_scan_usages.js` tracking scan usage
+- ✅ Backend: Scan controller check `plan === 'free'` + count current month scans
+- ✅ Backend: Trả về error 429 khi free user dùng hết 3 lần/tháng
+- ✅ Frontend: Loại bỏ blocking page cho free users
+- ✅ Frontend: Thêm badge counter "X lần còn lại" ở header
+- ✅ Frontend: Show error + upgrade button khi hết limit
+- ✅ Frontend: UpgradeModal đã hoàn thành (QR payment Techcombank)
 
 ---
 
