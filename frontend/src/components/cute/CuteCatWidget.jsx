@@ -1,6 +1,5 @@
 import styles from './CuteCatWidget.module.css';
-
-const CAT_IMAGE = 'https://lh3.googleusercontent.com/aida-public/AB6AXuBCy-Gfl6ZBuN49Zw5XA2LX0LuIf3Qk1rZjLgWtK2DL6F0rRVadkOay17Uu67znz4NU6am_vpTStzP-c73kEA2vheJEkwWzxfgwD-17Igw9ZmVXAlJJfc4sSHZhD96CjTWEN9g-ydFj-QnzinEU0L3QT9P1akdskbTtN2qaYsl5yBx3vwb03Mb7aVkue4SIQ6zHzkD8LHYN5lqJA9aAySCJuP5kOIfkCVs67-HaOVj_TQZIp2Mv-BlmlgsDIpDrd3wepQIaMPhIMuA';
+import catImage from '../../assets/cute_cat_clean_transparent.png';
 
 export default function CuteCatWidget() {
   return (
@@ -9,7 +8,7 @@ export default function CuteCatWidget() {
 
       <div className={styles.catContainer}>
         <img
-          src={CAT_IMAGE}
+          src={catImage}
           alt="Mèo dễ thương"
           className={styles.catImage}
         />
@@ -35,7 +34,7 @@ export default function CuteCatWidget() {
         </svg>
       </div>
 
-      <p className={styles.label}>Thao đổi nhịp tim</p>
+      <p className={styles.label}>Chưa có chỉ số nhịp tim</p>
     </div>
   );
 }

@@ -12,7 +12,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const t = useT();
   const [identifier, setIdentifier] = useState('khoi@example.com');
-  const [password, setPassword] = useState('123456');
+  const [password, setPassword] = useState('admin');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 

@@ -55,6 +55,8 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
+  position: relative;
+  z-index: 2; /* Renders above the cat's glow but below the cat */
 }
 
 .medicationCard {
@@ -107,7 +109,15 @@
 .cuteCatRow {
   display: flex;
   justify-content: center;
-  margin-bottom: 8px;
+  margin-bottom: 5px; /* Pushed the cards completely down so there is no overlap */
+  position: relative;
+  /* No z-index here so children can interleave with metricsGrid */
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  overflow: visible;
+  pointer-events: none; /* Let clicks pass through */
 }
 
 .medicationCardCute {

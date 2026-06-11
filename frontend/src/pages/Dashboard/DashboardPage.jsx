@@ -14,6 +14,7 @@ import EmptyState from '../../components/common/EmptyState';
 import CuteBackground from '../../components/cute/CuteBackground';
 import CuteCatWidget from '../../components/cute/CuteCatWidget';
 import CuteAstronautCat from '../../components/cute/CuteAstronautCat';
+import CutePillBox from '../../components/cute/CutePillBox';
 import styles from './DashboardPage.module.css';
 
 function getGreeting(cute, t) {
@@ -127,7 +128,7 @@ export default function DashboardPage() {
 
             {isCuteMode && todayMedications.length === 0 && (
               <div className={styles.cuteAstronautWrapper}>
-                <CuteAstronautCat size="full" />
+                <CutePillBox />
               </div>
             )}
 

@@ -28,10 +28,15 @@ export default defineConfig({
       configResolved() {
         if (process.env.NODE_ENV === 'development') {
           setTimeout(() => {
-            spawn('cmd.exe', ['/c', 'start chrome http://localhost:5173 --incognito'], {
-              stdio: 'ignore',
-              detached: true
-            });
+            const url = 'http://localhost:5173';
+            const platform = process.platform;
+            if (platform === 'darwin') {
+              spawn('open', [url], { stdio: 'ignore', detached: true });
+            } else if (platform === 'win32') {
+              spawn('cmd.exe', ['/c', 'start chrome ' + url + ' --incognito'], { stdio: 'ignore', detached: true });
+            } else {
+              spawn('xdg-open', [url], { stdio: 'ignore', detached: true });
+            }
           }, 1500);
         }
       }
