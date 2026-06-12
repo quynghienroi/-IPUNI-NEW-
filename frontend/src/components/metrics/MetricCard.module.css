@@ -24,9 +24,16 @@
   letter-spacing: -0.5px;
 }
 
-.cardValue.danger { color: var(--color-danger); }
-.cardValue.warning { color: var(--color-warning); }
+.cardValue.normal { color: #22C55E; }
+.cardValue.prediabetes { color: #F59E0B; }
+.cardValue.danger { color: #EF4444; }
 .cardValue.low { color: #7C3AED; }
+
+.cardValueRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
 
 .cardSub {
   font-size: 12px;

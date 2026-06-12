@@ -13,7 +13,6 @@ export default function TopBar() {
     <header className={styles.topbar}>
       <div className={styles.logo}>
         <Logo size="sm" variant="onDark" />
-        <span className={styles.logoText}>DIA+</span>
         {isCuteMode && <Sparkles size={14} color="#fff" strokeWidth={2.5} />}
         {isCuteMode && <span className={styles.cuteBadge}>cute</span>}
       </div>

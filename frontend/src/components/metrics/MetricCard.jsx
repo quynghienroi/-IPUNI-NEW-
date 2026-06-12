@@ -1,11 +1,12 @@
-import { Activity, Plus } from 'lucide-react';
+import { Activity, Plus, AlertTriangle } from 'lucide-react';
 import { METRIC_TYPES, getMetricStatus } from '../../constants/metrics';
 import { useT } from '../../hooks/useT';
 import styles from './MetricCard.module.css';
 
 export function MetricCard({ type, metric }) {
   const t = useT();
-  const typeLabel = t.metrics?.types?.[type] || type;
+  const meta = METRIC_TYPES[type] || {};
+  const typeLabel = t.metrics?.types?.[type] || meta.label || type;
   const status = metric ? getMetricStatus(type, metric.value) : null;
 
   return (
@@ -14,11 +15,14 @@ export function MetricCard({ type, metric }) {
         <span>{typeLabel}</span>
         <Activity size={14} color="#1B5FA6" />
       </div>
-      <div className={`${styles.cardValue} ${status ? styles[status] : ''}`}>
-        {metric ? `${metric.value}` : '—'}
+      <div className={styles.cardValueRow}>
+        <span className={`${styles.cardValue} ${status ? styles[status] : ''}`}>
+          {metric ? `${metric.value}` : '—'}
+        </span>
+        {status === 'danger' && <AlertTriangle size={16} color="#EF4444" />}
       </div>
       <div className={styles.cardSub}>
-        {metric ? 'mmol/L' : t.common?.noData || 'No data'}
+        {metric ? (meta.unit || 'mmol/L') : t.common?.noData || 'No data'}
       </div>
     </div>
   );

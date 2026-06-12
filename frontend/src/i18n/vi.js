@@ -5,7 +5,7 @@ const vi = {
     metrics: 'Chỉ số',
     scan: 'Chụp ảnh',
     medications: 'Thuốc',
-    appointments: 'Lịch hẹn',
+    appointments: 'Bác Sĩ',
   },
 
   // Dashboard
@@ -43,22 +43,22 @@ const vi = {
     glucoseLabel: 'Glucose',
     hba1cLabel: 'HbA1c',
     types: {
-      glucose_random: 'Đường huyết ngẫu nhiên',
-      glucose_fasting: 'Đường huyết lúc đói',
-      glucose_postmeal: 'Đường huyết sau ăn 2h',
-      hba1c: 'HbA1c (Glucose 3 tháng)',
+      glucose_fasting: 'Glucose',
+      hba1c: 'HbA1c',
+      c_peptide: 'C-peptide',
+      glucose_tolerance: 'Dung nạp Glucose',
     },
     thresholds: {
-      fasting: 'Bình thường: <7 mmol/L | Nguy hiểm: >10 mmol/L',
-      post_meal_2h: 'Bình thường: <7.8 mmol/L | Nguy hiểm: >11.1 mmol/L',
-      pre_meal: 'Bình thường: 4.4-7.2 mmol/L | Nguy hiểm: >10 mmol/L',
-      pre_sleep: 'Bình thường: 5.0-8.3 mmol/L | Nguy hiểm: >10 mmol/L',
+      glucose_fasting: 'Bình thường: 3.9–5.5 | Tiền đái tháo đường: 5.6–6.9 | Đái tháo đường: ≥7.0 mmol/L',
+      glucose_tolerance: 'Bình thường: <7.8 | Tiền đái tháo đường: 7.8–11.0 | Đái tháo đường: ≥11.1 mmol/L',
+      hba1c: 'Bình thường: <5.7% | Tiền đái tháo đường: 5.7–6.4% | Đái tháo đường: ≥6.5%',
+      c_peptide: 'Thấp (thiếu insulin): <0.5 | Bình thường: 0.5–2.0 | Cao (kháng insulin): >2.0 ng/mL',
     },
     statusLow: 'Hạ đường huyết',
-    statusNormal: 'Bình thường',
+    statusNormal: 'Bình thường (Kiểm soát tốt)',
     statusWarning: 'Cảnh báo',
-    statusDanger: 'Nguy hiểm',
-    statusPrediabetes: 'Tiền tiểu đường',
+    statusDanger: 'Đái tháo đường',
+    statusPrediabetes: 'Tiền đái tháo đường (Có nguy cơ)',
     hypoglycemia: 'Hạ đường huyết (<3.9 mmol/L)',
     statisticsTitle: 'Thống kê',
     average: 'Trung bình',
@@ -94,7 +94,7 @@ const vi = {
 
   // Appointments page
   appointments: {
-    title: 'Lịch hẹn & Hướng dẫn',
+    title: 'Bác Sĩ & Hướng dẫn',
     subtitle: 'Lịch tái khám và chỉ dẫn từ bác sĩ',
     tabAppointments: 'Lịch hẹn',
     tabDoctor: 'Từ bác sĩ',
@@ -167,6 +167,9 @@ const vi = {
   // Settings
   settings: {
     title: 'Cài Đặt',
+    sectionDisplay: 'Hiển thị',
+    fontSizeTitle: 'Cỡ chữ (Phóng to)',
+    fontSizeDesc: 'Phóng to toàn bộ chữ để dễ đọc hơn',
     sectionTheme: 'Giao diện',
     cuteMode: 'Cute Mode',
     cuteModeDesc: 'Giao diện trẻ trung, màu pastel dễ thương',

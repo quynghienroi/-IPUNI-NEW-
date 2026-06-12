@@ -64,6 +64,19 @@ const useThemeStore = create((set) => {
         applyTheme(saved);
         return { theme: saved, isCuteMode: saved === 'cute', isGoldMode: false };
       }),
+
+    // Trang đăng nhập/đăng ký: luôn hiển thị giao diện mặc định (chỉ đổi giao diện,
+    // KHÔNG xoá lựa chọn đã lưu — khi đăng nhập lại sẽ khôi phục).
+    applyDefaultLook: () => {
+      document.documentElement.setAttribute('data-theme', '');
+    },
+
+    // Vào trong app: khôi phục lại giao diện người dùng đã chọn.
+    restoreTheme: () =>
+      set((state) => {
+        applyTheme(state.theme);
+        return {};
+      }),
   };
 });
 

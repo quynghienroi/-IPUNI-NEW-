@@ -64,9 +64,16 @@ async function createMetric(req, res, next) {
   try {
     const { measurement_type, value, measured_at, note } = req.validatedBody;
 
-    // Determine category based on type
-    const measurement_category = measurement_type.includes('glucose') ? 'glucose' : 'hba1c';
-    const unit = measurement_category === 'glucose' ? 'mmol/L' : '%';
+    // Determine category & unit based on type
+    let measurement_category = 'glucose';
+    let unit = 'mmol/L';
+    if (measurement_type === 'hba1c') {
+      measurement_category = 'hba1c';
+      unit = '%';
+    } else if (measurement_type === 'c_peptide') {
+      measurement_category = 'c_peptide';
+      unit = 'ng/mL';
+    }
 
     // Calculate status
     const status = MetricsCalculator.calculateStatus(measurement_type, value);

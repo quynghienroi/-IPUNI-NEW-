@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { CalendarDays, FileText } from 'lucide-react';
+import { Stethoscope, FileText } from 'lucide-react';
 import { useAppointments } from '../../hooks/useAppointments';
 import { useT } from '../../hooks/useT';
 import AppointmentCard from '../../components/appointments/AppointmentCard';
@@ -33,7 +33,7 @@ export default function AppointmentsPage() {
 
       {activeTab === 'appointments' && (
         appointments.length === 0 ? (
-          <EmptyState icon={CalendarDays} title={t.appointments.noAppointments} subtitle={t.appointments.noAppointmentsSubtitle} />
+          <EmptyState icon={Stethoscope} title={t.appointments.noAppointments} subtitle={t.appointments.noAppointmentsSubtitle} />
         ) : (
           <div className={styles.list}>{appointments.map((a) => <AppointmentCard key={a.id} appointment={a} />)}</div>
         )

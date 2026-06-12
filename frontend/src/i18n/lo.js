@@ -5,7 +5,7 @@ const lo = {
     metrics: 'ຕົວຊີ້ວັດ',
     scan: 'ສະແກນ',
     medications: 'ຢາ',
-    appointments: 'ນັດໝາຍ',
+    appointments: 'ແພດ',
   },
 
   // Dashboard
@@ -43,22 +43,22 @@ const lo = {
     glucoseLabel: 'ນ້ຳຕານ',
     hba1cLabel: 'HbA1c',
     types: {
-      glucose_random: 'ນ້ຳຕານແບບສຸ່ມ',
-      glucose_fasting: 'ນ້ຳຕານຂະໜາດອົດ',
-      glucose_postmeal: 'ນ້ຳຕານຫຼັງກິນ 2h',
-      hba1c: 'HbA1c (ສະເລ່ຍ 3 ເດືອນ)',
+      glucose_fasting: 'Glucose',
+      hba1c: 'HbA1c',
+      c_peptide: 'C-peptide',
+      glucose_tolerance: 'ການທົນທານກລູໂຄສ',
     },
     thresholds: {
-      fasting: 'ປົກກະຕິ: <7 mmol/L | ອັນຕະລາຍ: >10 mmol/L',
-      post_meal_2h: 'ປົກກະຕິ: <7.8 mmol/L | ອັນຕະລາຍ: >11.1 mmol/L',
-      pre_meal: 'ປົກກະຕິ: 4.4-7.2 mmol/L | ອັນຕະລາຍ: >10 mmol/L',
-      pre_sleep: 'ປົກກະຕິ: 5.0-8.3 mmol/L | ອັນຕະລາຍ: >10 mmol/L',
+      glucose_fasting: 'ປົກກະຕິ: 3.9–5.5 | ກ່ອນເປັນ: 5.6–6.9 | ເບົາຫວານ: ≥7.0 mmol/L',
+      glucose_tolerance: 'ປົກກະຕິ: <7.8 | ກ່ອນເປັນ: 7.8–11.0 | ເບົາຫວານ: ≥11.1 mmol/L',
+      hba1c: 'ປົກກະຕິ: <5.7% | ກ່ອນເປັນ: 5.7–6.4% | ເບົາຫວານ: ≥6.5%',
+      c_peptide: 'ຕ່ຳ: <0.5 | ປົກກະຕິ: 0.5–2.0 | ສູງ: >2.0 ng/mL',
     },
     statusLow: 'ນ້ຳຕານຕ່ຳ',
-    statusNormal: 'ປົກກະຕິ',
+    statusNormal: 'ປົກກະຕິ (ຄວບຄຸມດີ)',
     statusWarning: 'ເຕືອນ',
-    statusDanger: 'ອັນຕະລາຍ',
-    statusPrediabetes: 'ກ່ອນເປັນເບົາຫວານ',
+    statusDanger: 'ເບົາຫວານ',
+    statusPrediabetes: 'ກ່ອນເປັນເບົາຫວານ (ມີຄວາມສ່ຽງ)',
     hypoglycemia: 'ນ້ຳຕານຕ່ຳ (<3.9 mmol/L)',
     statisticsTitle: 'ສະຖິຕິ',
     average: 'ສະເລ່ຍ',
@@ -94,7 +94,7 @@ const lo = {
 
   // Appointments page
   appointments: {
-    title: 'ນັດໝາຍ & ຄຳແນະນຳ',
+    title: 'ແພດ & ຄຳແນະນຳ',
     subtitle: 'ຕາຕະລາງຕິດຕາມແລະຄຳແນະນຳຈາກທ່ານໝໍ',
     tabAppointments: 'ນັດໝາຍ',
     tabDoctor: 'ຈາກທ່ານໝໍ',
@@ -167,6 +167,9 @@ const lo = {
   // Settings
   settings: {
     title: 'ການຕັ້ງຄ່າ',
+    sectionDisplay: 'ການສະແດງຜົນ',
+    fontSizeTitle: 'ຂະໜາດໂຕໜັງສື (ຂະຫຍາຍ)',
+    fontSizeDesc: 'ຂະຫຍາຍໂຕໜັງສືທັງໝົດໃຫ້ອ່ານງ່າຍຂຶ້ນ',
     sectionTheme: 'ຮູບລັກສະນະ',
     cuteMode: 'ໂໝດໜ້າຮັກ',
     cuteModeDesc: 'ໜ້າຕາສີພາສເທລ ດູໜ້າຮັກ',

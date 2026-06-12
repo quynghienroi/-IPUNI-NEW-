@@ -1,47 +1,19 @@
 .wrap {
   display: flex;
   align-items: center;
-  gap: 8px;
   flex-shrink: 0;
 }
 
-/* Kích thước ảnh logo */
-.sm  .img { width: 28px;  height: 28px; }
-.md  .img { width: 44px;  height: 44px; }
-.lg  .img { width: 72px;  height: 72px; }
-
-.img {
-  display: block;
-  object-fit: contain;
-  border-radius: 6px;
-}
-
-/* Tách nền trắng trên nền màu/tối */
-.onDark {
-  mix-blend-mode: multiply;
-  filter: brightness(1.05) contrast(1.1);
-  background: transparent;
-}
-
-/* Trên nền sáng: giữ nguyên, thêm viền nhẹ */
-.onLight {
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-}
-
-/* Chữ DIA+ đi kèm */
 .text {
-  font-size: 20px;
   font-weight: 800;
   letter-spacing: 1px;
-  color: var(--color-text-primary);
+  line-height: 1;
 }
 
-.textOnDark {
-  color: #fff;
-}
+.onDark { color: #fff; }
+.onLight { color: var(--color-primary); }
 
-/* Kích thước tổng thể của wrap */
-.sm  { height: 32px; }
-.md  { height: 48px; }
-.lg  { height: 80px; }
+/* Kích thước chữ theo size */
+.sm .text { font-size: 22px; }
+.md .text { font-size: 30px; }
+.lg .text { font-size: 44px; }

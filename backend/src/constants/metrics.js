@@ -1,20 +1,22 @@
-// Glucose & HbA1c constants, thresholds, and targets
+// Glucose, HbA1c & C-peptide constants, thresholds, and targets
 
 const MEASUREMENT_TYPES = {
   GLUCOSE_FASTING: 'glucose_fasting',
-  GLUCOSE_POSTMEAL: 'glucose_postmeal',
-  GLUCOSE_RANDOM: 'glucose_random',
-  HBAIC: 'hba1c'
+  GLUCOSE_TOLERANCE: 'glucose_tolerance',
+  HBAIC: 'hba1c',
+  C_PEPTIDE: 'c_peptide'
 };
 
 const MEASUREMENT_CATEGORIES = {
   GLUCOSE: 'glucose',
-  HBAIC: 'hba1c'
+  HBAIC: 'hba1c',
+  C_PEPTIDE: 'c_peptide'
 };
 
 const UNITS = {
   GLUCOSE: 'mmol/L',
-  HBAIC: '%'
+  HBAIC: '%',
+  C_PEPTIDE: 'ng/mL'
 };
 
 // Clinical thresholds for each measurement type
@@ -22,27 +24,19 @@ const THRESHOLDS = {
   glucose_fasting: {
     unit: 'mmol/L',
     category: 'glucose',
-    normalMax: 5.6,
-    warningMin: 5.6,
-    warningMax: 6.9,
+    normalMax: 5.5,
+    prediabetesMin: 5.6,
+    prediabetesMax: 6.9,
     dangerMin: 7.0,
     diagnosticCutoff: 7.0
   },
 
-  glucose_postmeal: {
+  glucose_tolerance: {
     unit: 'mmol/L',
     category: 'glucose',
-    normalMax: 7.8,
-    warningMin: 7.8,
-    warningMax: 11.0,
-    dangerMin: 11.1,
-    diagnosticCutoff: 11.1
-  },
-
-  glucose_random: {
-    unit: 'mmol/L',
-    category: 'glucose',
-    normalMax: 7.8,
+    normalMax: 7.7,
+    prediabetesMin: 7.8,
+    prediabetesMax: 11.0,
     dangerMin: 11.1,
     diagnosticCutoff: 11.1
   },
@@ -50,7 +44,7 @@ const THRESHOLDS = {
   hba1c: {
     unit: '%',
     category: 'hba1c',
-    normalMax: 5.7,
+    normalMax: 5.6,
     prediabetesMin: 5.7,
     prediabetesMax: 6.4,
     dangerMin: 6.5,
@@ -58,10 +52,18 @@ const THRESHOLDS = {
     type2Target: 7.0,
     type1Target: 6.5,
     warningThreshold: 8.0
+  },
+
+  c_peptide: {
+    unit: 'ng/mL',
+    category: 'c_peptide',
+    lowMax: 0.5,
+    normalMax: 2.0,
+    prediabetesMin: 2.0
   }
 };
 
-// Hypoglycemia threshold (applies to all glucose types)
+// Hypoglycemia threshold (applies to glucose types)
 const HYPOGLYCEMIA_THRESHOLD = 3.9; // mmol/L
 
 // Treatment targets by patient type
@@ -69,16 +71,14 @@ const PATIENT_TARGETS = {
   type2_diabetes: {
     glucose: {
       fasting: 7.0,
-      postmeal: 7.8,
-      random: 7.8
+      tolerance: 7.8
     },
     hba1c: 7.0
   },
   type1_diabetes: {
     glucose: {
       fasting: 5.0,
-      postmeal: 7.2,
-      random: 7.2
+      tolerance: 7.2
     },
     hba1c: 6.5
   }
