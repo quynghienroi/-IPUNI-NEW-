@@ -17,7 +17,7 @@ exports.seed = async function(knex) {
       address: '123 Đường Lê Lợi, Quận 1, TP. HCM',
       password_hash: hashAdmin,
       diagnosis: 'type2_diabetes',
-      plan: 'free',
+      plan: 'pro',
     },
     {
       id: 2,
