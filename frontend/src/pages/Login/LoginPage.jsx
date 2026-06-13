@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import useThemeStore from '../../store/themeStore';
 import Logo from '../../components/common/Logo';
 import { useT } from '../../hooks/useT';
 import Input from '../../components/common/Input';
@@ -11,10 +12,14 @@ export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const t = useT();
+  const applyDefaultLook = useThemeStore((s) => s.applyDefaultLook);
   const [identifier, setIdentifier] = useState('khoi@example.com');
   const [password, setPassword] = useState('admin');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Trang ngoài luôn dùng giao diện mặc định
+  useEffect(() => { applyDefaultLook(); }, [applyDefaultLook]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,7 +40,6 @@ export default function LoginPage() {
     <div className={styles.page}>
       <div className={styles.logoSection}>
         <Logo size="lg" variant="onDark" />
-        <div className={styles.logoName}>DIA+</div>
         <div className={styles.tagline}>{t.auth.taglineLogin.replace('\\n', '\n')}</div>
       </div>
 

@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react';
-import { createPortal } from 'react-dom';
 import { User, Settings, LogOut, Crown, Palette, Globe } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { usePlan } from '../../hooks/usePlan';
@@ -27,7 +26,6 @@ export default function UserMenu() {
   const [showSettings, setShowSettings] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [showGiaoDien, setShowGiaoDien] = useState(false);
-  const [menuPos, setMenuPos] = useState({ top: 0, right: 0 });
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
 
@@ -46,16 +44,7 @@ export default function UserMenu() {
     }
   }, [isOpen]);
 
-  const handleToggle = () => {
-    if (!isOpen && buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect();
-      setMenuPos({
-        top: rect.bottom + 8,
-        right: window.innerWidth - rect.right,
-      });
-    }
-    setIsOpen(!isOpen);
-  };
+  const handleToggle = () => setIsOpen((o) => !o);
 
   const handleLogout = () => {
     logout();
@@ -99,67 +88,64 @@ export default function UserMenu() {
 
   return (
     <>
-      <button
-        ref={buttonRef}
-        className={styles.userBtn}
-        onClick={handleToggle}
-        title={user?.name || 'User'}
-      >
-        <div className={`${styles.avatar} ${isPro ? styles.avatarPro : ''}`}>
-          {getInitials(user?.name)}
-        </div>
-        {isPro && <Crown size={11} className={styles.proCrown} />}
-      </button>
-
-      {isOpen && createPortal(
-        <div
-          ref={menuRef}
-          className={styles.menu}
-          style={{ top: menuPos.top, right: menuPos.right }}
+      <div className={styles.wrap}>
+        <button
+          ref={buttonRef}
+          className={styles.userBtn}
+          onClick={handleToggle}
+          title={user?.name || 'User'}
         >
-          <button className={`${styles.menuItem} ${styles.upgradeItem}`} onClick={handleUpgrade}>
-            <Crown size={16} />
-            <span>{t.userMenu.upgrade}</span>
-            <span className={styles.upgradeBadge}>PRO</span>
-          </button>
-          <div className={styles.menuDivider} />
-          <button className={styles.menuItem} onClick={handleProfile}>
-            <User size={18} />
-            <span>{t.userMenu.profile}</span>
-          </button>
-          <div className={styles.langRow}>
-            <Globe size={15} className={styles.langIcon} />
-            <span className={styles.langRowLabel}>{t.userMenu.language || 'Ngôn ngữ'}</span>
-            <div className={styles.langFlags}>
-              {LANG_FLAGS.map(({ code, img, label }) => (
-                <button
-                  key={code}
-                  className={`${styles.langFlagBtn} ${lang === code ? styles.langFlagActive : ''}`}
-                  onClick={() => setLang(code)}
-                  title={label}
-                >
-                  <img src={img} alt={label} className={styles.langFlagImg} />
-                </button>
-              ))}
-            </div>
+          <div className={`${styles.avatar} ${isPro ? styles.avatarPro : ''}`}>
+            {getInitials(user?.name)}
           </div>
-          {isPro && (
-            <button className={`${styles.menuItem} ${styles.giaoDienItem}`} onClick={handleGiaoDien}>
-              <Palette size={18} />
-              <span>{t.userMenu.theme}</span>
+          {isPro && <Crown size={11} className={styles.proCrown} />}
+        </button>
+
+        {isOpen && (
+          <div ref={menuRef} className={styles.menu}>
+            <button className={`${styles.menuItem} ${styles.upgradeItem}`} onClick={handleUpgrade}>
+              <Crown size={16} />
+              <span>{t.userMenu.upgrade}</span>
+              <span className={styles.upgradeBadge}>PRO</span>
             </button>
-          )}
-          <button className={styles.menuItem} onClick={handleSettings}>
-            <Settings size={18} />
-            <span>{t.userMenu.settings}</span>
-          </button>
-          <button className={`${styles.menuItem} ${styles.logout}`} onClick={handleLogout}>
-            <LogOut size={18} />
-            <span>{t.userMenu.logout}</span>
-          </button>
-        </div>,
-        document.body
-      )}
+            <div className={styles.menuDivider} />
+            <button className={styles.menuItem} onClick={handleProfile}>
+              <User size={18} />
+              <span>{t.userMenu.profile}</span>
+            </button>
+            <div className={styles.langRow}>
+              <Globe size={15} className={styles.langIcon} />
+              <span className={styles.langRowLabel}>{t.userMenu.language || 'Ngôn ngữ'}</span>
+              <div className={styles.langFlags}>
+                {LANG_FLAGS.map(({ code, img, label }) => (
+                  <button
+                    key={code}
+                    className={`${styles.langFlagBtn} ${lang === code ? styles.langFlagActive : ''}`}
+                    onClick={() => setLang(code)}
+                    title={label}
+                  >
+                    <img src={img} alt={label} className={styles.langFlagImg} />
+                  </button>
+                ))}
+              </div>
+            </div>
+            {isPro && (
+              <button className={`${styles.menuItem} ${styles.giaoDienItem}`} onClick={handleGiaoDien}>
+                <Palette size={18} />
+                <span>{t.userMenu.theme}</span>
+              </button>
+            )}
+            <button className={styles.menuItem} onClick={handleSettings}>
+              <Settings size={18} />
+              <span>{t.userMenu.settings}</span>
+            </button>
+            <button className={`${styles.menuItem} ${styles.logout}`} onClick={handleLogout}>
+              <LogOut size={18} />
+              <span>{t.userMenu.logout}</span>
+            </button>
+          </div>
+        )}
+      </div>
 
       {showProfile && (
         <UserProfileModal onClose={() => setShowProfile(false)} />

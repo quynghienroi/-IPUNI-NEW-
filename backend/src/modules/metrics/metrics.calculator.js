@@ -11,19 +11,26 @@ class MetricsCalculator {
     const thresholds = THRESHOLDS[measurementType];
     if (!thresholds) return null;
 
-    // Glucose readings
+    // C-peptide: thấp = thiếu insulin (low), cao = kháng insulin (prediabetes)
+    if (measurementType === 'c_peptide') {
+      if (value < thresholds.lowMax) return 'low';
+      if (value <= thresholds.normalMax) return 'normal';
+      return 'prediabetes';
+    }
+
+    // Glucose readings (fasting, tolerance)
     if (measurementType.includes('glucose')) {
       if (value < HYPOGLYCEMIA_THRESHOLD) return 'low';
       if (value >= thresholds.dangerMin) return 'danger';
-      if (value > thresholds.normalMax) return 'warning';
+      if (value >= thresholds.prediabetesMin) return 'prediabetes';
       return 'normal';
     }
 
     // HbA1c reading
     if (measurementType === 'hba1c') {
-      if (value < thresholds.normalMax) return 'normal';
-      if (value <= thresholds.prediabetesMax) return 'prediabetes';
-      return 'danger';
+      if (value >= thresholds.dangerMin) return 'danger';
+      if (value >= thresholds.prediabetesMin) return 'prediabetes';
+      return 'normal';
     }
 
     return null;

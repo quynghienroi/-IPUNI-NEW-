@@ -23,9 +23,13 @@ const createMetricSchema = z.object({
     if (data.measurement_type.includes('glucose')) {
       return data.value >= 0.1 && data.value <= 50;
     }
-    // HbA1c: 4.0-15.0 %
+    // HbA1c: 3.0-20.0 %
     if (data.measurement_type === 'hba1c') {
-      return data.value >= 4.0 && data.value <= 15.0;
+      return data.value >= 3.0 && data.value <= 20.0;
+    }
+    // C-peptide: 0-20 ng/mL
+    if (data.measurement_type === 'c_peptide') {
+      return data.value >= 0 && data.value <= 20;
     }
     return false;
   },

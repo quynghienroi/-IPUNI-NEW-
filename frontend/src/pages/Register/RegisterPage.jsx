@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Logo from '../../components/common/Logo';
 import { useAuth } from '../../hooks/useAuth';
+import useThemeStore from '../../store/themeStore';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 import styles from './RegisterPage.module.css';
@@ -9,10 +10,14 @@ import styles from './RegisterPage.module.css';
 export default function RegisterPage() {
   const { register } = useAuth();
   const navigate = useNavigate();
+  const applyDefaultLook = useThemeStore((s) => s.applyDefaultLook);
   const [form, setForm] = useState({ cccd: '', phone: '', password: '', confirmPassword: '' });
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Trang ngoài luôn dùng giao diện mặc định
+  useEffect(() => { applyDefaultLook(); }, [applyDefaultLook]);
 
   const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
 
@@ -46,7 +51,6 @@ export default function RegisterPage() {
     <div className={styles.page}>
       <div className={styles.logoSection}>
         <Logo size="lg" variant="onDark" />
-        <div className={styles.logoName}>DIA+</div>
         <div className={styles.tagline}>Tạo tài khoản mới<br />để bắt đầu theo dõi sức khỏe</div>
       </div>
 

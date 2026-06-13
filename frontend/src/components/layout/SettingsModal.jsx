@@ -1,12 +1,14 @@
-import { Sparkles, Bell, Shield, HelpCircle, Crown } from 'lucide-react';
+import { Sparkles, Bell, Shield, HelpCircle, Crown, ZoomIn } from 'lucide-react';
 import Modal from '../common/Modal';
 import useThemeStore from '../../store/themeStore';
+import useAccessibilityStore from '../../store/accessibilityStore';
 import { usePlan } from '../../hooks/usePlan';
 import { useT } from '../../hooks/useT';
 import styles from './SettingsModal.module.css';
 
 export default function SettingsModal({ onClose }) {
   const { isCuteMode, toggleCuteMode, isGoldMode } = useThemeStore();
+  const { fontScale, setFontScale } = useAccessibilityStore();
   const { isPro } = usePlan();
   const t = useT();
   const s = t.settings;
@@ -14,6 +16,35 @@ export default function SettingsModal({ onClose }) {
   return (
     <Modal title={s.title} onClose={onClose}>
       <div className={styles.container}>
+
+        <p className={styles.sectionLabel}>{s.sectionDisplay || 'Hiển thị'}</p>
+
+        <div className={styles.row}>
+          <div className={styles.rowLeft}>
+            <div className={styles.iconWrap} style={{ background: '#EFF6FF' }}>
+              <ZoomIn size={18} color="#1B5FA6" />
+            </div>
+            <div>
+              <p className={styles.rowTitle}>{s.fontSizeTitle || 'Cỡ chữ (Phóng to)'}</p>
+              <p className={styles.rowDesc}>{s.fontSizeDesc || 'Phóng to toàn bộ chữ để dễ đọc hơn'}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.scaleRow}>
+          {[1, 2, 3, 4].map((lvl) => (
+            <button
+              key={lvl}
+              className={`${styles.scaleBtn} ${fontScale === lvl ? styles.scaleBtnActive : ''}`}
+              onClick={() => setFontScale(lvl)}
+              aria-label={`Phóng to ${lvl}x`}
+            >
+              {lvl}x
+            </button>
+          ))}
+        </div>
+
+        <div className={styles.divider} />
 
         <p className={styles.sectionLabel}>{s.sectionTheme}</p>
 

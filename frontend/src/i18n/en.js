@@ -5,7 +5,7 @@ const en = {
     metrics: 'Metrics',
     scan: 'Scan',
     medications: 'Medications',
-    appointments: 'Appointments',
+    appointments: 'Doctor',
   },
 
   // Dashboard
@@ -43,22 +43,22 @@ const en = {
     glucoseLabel: 'Glucose',
     hba1cLabel: 'HbA1c',
     types: {
-      glucose_random: 'Random Blood Glucose',
-      glucose_fasting: 'Fasting Blood Glucose',
-      glucose_postmeal: 'Post-meal (2h)',
-      hba1c: 'HbA1c (3-month average)',
+      glucose_fasting: 'Glucose',
+      hba1c: 'HbA1c',
+      c_peptide: 'C-peptide',
+      glucose_tolerance: 'Glucose Tolerance',
     },
     thresholds: {
-      fasting: 'Normal: <7 mmol/L | Danger: >10 mmol/L',
-      post_meal_2h: 'Normal: <7.8 mmol/L | Danger: >11.1 mmol/L',
-      pre_meal: 'Normal: 4.4-7.2 mmol/L | Danger: >10 mmol/L',
-      pre_sleep: 'Normal: 5.0-8.3 mmol/L | Danger: >10 mmol/L',
+      glucose_fasting: 'Normal: 3.9–5.5 | Prediabetes: 5.6–6.9 | Diabetes: ≥7.0 mmol/L',
+      glucose_tolerance: 'Normal: <7.8 | Prediabetes: 7.8–11.0 | Diabetes: ≥11.1 mmol/L',
+      hba1c: 'Normal: <5.7% | Prediabetes: 5.7–6.4% | Diabetes: ≥6.5%',
+      c_peptide: 'Low (insulin deficiency): <0.5 | Normal: 0.5–2.0 | High (insulin resistance): >2.0 ng/mL',
     },
     statusLow: 'Low Blood Sugar',
-    statusNormal: 'Normal',
+    statusNormal: 'Normal (Well Controlled)',
     statusWarning: 'Warning',
-    statusDanger: 'Danger',
-    statusPrediabetes: 'Prediabetes',
+    statusDanger: 'Diabetes',
+    statusPrediabetes: 'Prediabetes (At Risk)',
     hypoglycemia: 'Low Blood Sugar (<3.9 mmol/L)',
     statisticsTitle: 'Statistics',
     average: 'Average',
@@ -94,7 +94,7 @@ const en = {
 
   // Appointments page
   appointments: {
-    title: 'Appointments & Guidance',
+    title: 'Doctor & Guidance',
     subtitle: 'Follow-up schedule and doctor instructions',
     tabAppointments: 'Appointments',
     tabDoctor: 'From Doctor',
@@ -167,6 +167,9 @@ const en = {
   // Settings
   settings: {
     title: 'Settings',
+    sectionDisplay: 'Display',
+    fontSizeTitle: 'Text Size (Zoom)',
+    fontSizeDesc: 'Enlarge all text for easier reading',
     sectionTheme: 'Appearance',
     cuteMode: 'Cute Mode',
     cuteModeDesc: 'Pastel and playful interface',

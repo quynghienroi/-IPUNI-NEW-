@@ -14,7 +14,6 @@ import EmptyState from '../../components/common/EmptyState';
 import CuteBackground from '../../components/cute/CuteBackground';
 import CuteCatWidget from '../../components/cute/CuteCatWidget';
 import CuteAstronautCat from '../../components/cute/CuteAstronautCat';
-import CutePillBox from '../../components/cute/CutePillBox';
 import styles from './DashboardPage.module.css';
 
 function getGreeting(cute, t) {
@@ -100,7 +99,10 @@ export default function DashboardPage() {
           )}
 
           <div className={styles.metricsGrid}>
-            <MetricCard type="fasting" metric={latestMetrics?.fasting} />
+            <MetricCard type="glucose_fasting" metric={latestMetrics?.glucose_fasting} />
+            <MetricCard type="hba1c" metric={latestMetrics?.hba1c} />
+            <MetricCard type="c_peptide" metric={latestMetrics?.c_peptide} />
+            <MetricCard type="glucose_tolerance" metric={latestMetrics?.glucose_tolerance} />
             <AddMetricCard onClick={() => setShowModal(true)} />
           </div>
         </div>
@@ -128,7 +130,7 @@ export default function DashboardPage() {
 
             {isCuteMode && todayMedications.length === 0 && (
               <div className={styles.cuteAstronautWrapper}>
-                <CutePillBox />
+                <CuteAstronautCat size="full" />
               </div>
             )}
 

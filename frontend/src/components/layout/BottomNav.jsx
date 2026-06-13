@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { Home, Activity, Pill, Calendar, Camera } from 'lucide-react';
+import { Home, Activity, Pill, Stethoscope, Camera } from 'lucide-react';
 import { useT } from '../../hooks/useT';
 import styles from './BottomNav.module.css';
 
@@ -13,7 +13,7 @@ export default function BottomNav() {
 
   const RIGHT_ITEMS = [
     { to: '/medications', icon: Pill, label: t.nav.medications },
-    { to: '/appointments', icon: Calendar, label: t.nav.appointments },
+    { to: '/appointments', icon: Stethoscope, label: t.nav.appointments },
   ];
 
   return (

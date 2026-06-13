@@ -1,45 +1,40 @@
 import { useState } from 'react';
 import Modal from '../common/Modal';
 import Button from '../common/Button';
-import { MEASUREMENT_TYPES } from '../../constants/metrics';
+import { MEASUREMENT_TYPES, METRIC_TYPES } from '../../constants/metrics';
 import { useT } from '../../hooks/useT';
 import styles from './AddMetricModal.module.css';
 
-function nowLocalISO() {
+function nowLocalParts() {
   const now = new Date();
   const pad = (n) => String(n).padStart(2, '0');
   return {
     date: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`,
-    time: `${pad(now.getHours())}:${pad(now.getMinutes())}`
+    time: `${pad(now.getHours())}:${pad(now.getMinutes())}`,
+    seconds: pad(now.getSeconds())
   };
 }
 
 export default function AddMetricModal({ onClose, onSave, onSuccess, defaultType }) {
-  const { date, time } = nowLocalISO();
+  const { date, time, seconds } = nowLocalParts();
   const t = useT();
   const [measurementType, setMeasurementType] = useState(defaultType || MEASUREMENT_TYPES.GLUCOSE_FASTING);
   const [value, setValue] = useState('');
   const [measuredDate, setMeasuredDate] = useState(date);
   const [measuredTime, setMeasuredTime] = useState(time);
+  const [measuredSeconds, setMeasuredSeconds] = useState(seconds);
   const [note, setNote] = useState('');
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
 
-  const isHbA1c = measurementType === MEASUREMENT_TYPES.HBAIC;
-  const minValue = isHbA1c ? 4.0 : 0.1;
-  const maxValue = isHbA1c ? 15.0 : 50;
-  const unit = isHbA1c ? '%' : 'mmol/L';
-  const placeholder = isHbA1c ? '6.8' : '7.0';
+  const meta = METRIC_TYPES[measurementType] || METRIC_TYPES.glucose_fasting;
+  const { unit, min: minValue, max: maxValue, placeholder } = meta;
 
   const handleSave = async () => {
     const num = parseFloat(value);
 
     if (!value || isNaN(num) || num < minValue || num > maxValue) {
-      setError(
-        isHbA1c
-          ? `HbA1c must be between ${minValue}-${maxValue} %`
-          : `Glucose must be between ${minValue}-${maxValue} mmol/L`
-      );
+      setError(`${meta.label}: ${minValue} – ${maxValue} ${unit}`);
       return;
     }
 
@@ -47,7 +42,8 @@ export default function AddMetricModal({ onClose, onSave, onSuccess, defaultType
     setSaving(true);
 
     try {
-      const measured_at = new Date(`${measuredDate}T${measuredTime}:00`).toISOString();
+      const ss = (measuredSeconds || '00').padStart(2, '0');
+      const measured_at = new Date(`${measuredDate}T${measuredTime}:${ss}`).toISOString();
       await onSave({
         measurement_type: measurementType,
         value: num,
@@ -57,7 +53,7 @@ export default function AddMetricModal({ onClose, onSave, onSuccess, defaultType
       onSuccess?.();
       onClose();
     } catch (e) {
-      setError(e?.response?.data?.message || t.addMetric.errorGeneric || 'Error saving metric');
+      setError(e?.response?.data?.message || t.addMetric?.errorGeneric || 'Error saving metric');
     } finally {
       setSaving(false);
     }
@@ -70,30 +66,25 @@ export default function AddMetricModal({ onClose, onSave, onSuccess, defaultType
         <select
           className={styles.select}
           value={measurementType}
-          onChange={(e) => setMeasurementType(e.target.value)}
+          onChange={(e) => { setMeasurementType(e.target.value); setError(''); }}
         >
-          <optgroup label={t.metrics?.glucoseLabel || 'Glucose'}>
-            <option value={MEASUREMENT_TYPES.GLUCOSE_FASTING}>
-              {t.metrics?.types?.glucose_fasting || 'Fasting'}
-            </option>
-            <option value={MEASUREMENT_TYPES.GLUCOSE_POSTMEAL}>
-              {t.metrics?.types?.glucose_postmeal || 'Post-meal (2h)'}
-            </option>
-            <option value={MEASUREMENT_TYPES.GLUCOSE_RANDOM}>
-              {t.metrics?.types?.glucose_random || 'Random'}
-            </option>
-          </optgroup>
-
-          <optgroup label={t.metrics?.hba1cLabel || 'HbA1c'}>
-            <option value={MEASUREMENT_TYPES.HBAIC}>
-              {t.metrics?.types?.hba1c || 'HbA1c (3-month average)'}
-            </option>
-          </optgroup>
+          <option value={MEASUREMENT_TYPES.GLUCOSE_FASTING}>
+            {t.metrics?.types?.glucose_fasting || METRIC_TYPES.glucose_fasting.label}
+          </option>
+          <option value={MEASUREMENT_TYPES.HBAIC}>
+            {t.metrics?.types?.hba1c || METRIC_TYPES.hba1c.label}
+          </option>
+          <option value={MEASUREMENT_TYPES.C_PEPTIDE}>
+            {t.metrics?.types?.c_peptide || METRIC_TYPES.c_peptide.label}
+          </option>
+          <option value={MEASUREMENT_TYPES.GLUCOSE_TOLERANCE}>
+            {t.metrics?.types?.glucose_tolerance || METRIC_TYPES.glucose_tolerance.label}
+          </option>
         </select>
       </div>
 
       <div className={styles.group}>
-        <label className={styles.label}>{t.addMetric?.valueLabel || 'Value'}</label>
+        <label className={styles.label}>{t.addMetric?.valueLabel || 'Value'} ({unit})</label>
         <div className={styles.valueRow}>
           <input
             className={styles.input}
@@ -124,6 +115,19 @@ export default function AddMetricModal({ onClose, onSave, onSuccess, defaultType
             type="time"
             value={measuredTime}
             onChange={(e) => setMeasuredTime(e.target.value)}
+          />
+          <input
+            className={styles.input}
+            type="text"
+            inputMode="numeric"
+            maxLength={2}
+            placeholder="giây"
+            value={measuredSeconds}
+            onChange={(e) => {
+              let v = e.target.value.replace(/\D/g, '').slice(0, 2);
+              if (v !== '' && parseInt(v) > 59) v = '59';
+              setMeasuredSeconds(v);
+            }}
           />
         </div>
       </div>
