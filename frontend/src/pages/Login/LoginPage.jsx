@@ -6,15 +6,17 @@ import { useT } from '../../hooks/useT';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 import { PhoneIcon, GoogleIcon } from '../../components/common/AuthIcons';
+import MockGoogleLoginModal from '../../components/common/MockGoogleLoginModal';
 import styles from './LoginPage.module.css';
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login, googleMockLogin } = useAuth();
   const navigate = useNavigate();
   const t = useT();
   const applyDefaultLook = useThemeStore((s) => s.applyDefaultLook);
   
   const [showEmailForm, setShowEmailForm] = useState(false);
+  const [showGoogleMock, setShowGoogleMock] = useState(false);
   const [identifier, setIdentifier] = useState('khoi@example.com');
   const [password, setPassword] = useState('admin');
   const [error, setError] = useState('');
@@ -38,6 +40,12 @@ export default function LoginPage() {
     }
   };
 
+  const handleGoogleLogin = async (email) => {
+    await googleMockLogin(email);
+    setShowGoogleMock(false);
+    navigate('/');
+  };
+
   return (
     <div className={styles.page}>
       <div className={styles.container}>
@@ -55,7 +63,10 @@ export default function LoginPage() {
               <PhoneIcon className={styles.icon} />
               <span>Đăng nhập qua số điện thoại</span>
             </button>
-            <button className={`${styles.authButton} ${styles.googleBtn}`}>
+            <button 
+              className={`${styles.authButton} ${styles.googleBtn}`}
+              onClick={() => setShowGoogleMock(true)}
+            >
               <GoogleIcon className={styles.icon} />
               <span>Đăng nhập qua Google</span>
             </button>
@@ -89,6 +100,13 @@ export default function LoginPage() {
           </div>
         )}
       </div>
+
+      {showGoogleMock && (
+        <MockGoogleLoginModal 
+          onClose={() => setShowGoogleMock(false)} 
+          onLogin={handleGoogleLogin} 
+        />
+      )}
     </div>
   );
 }

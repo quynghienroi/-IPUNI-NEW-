@@ -26,6 +26,14 @@ export function useAuth() {
     return user;
   };
 
+  const googleMockLogin = async (email) => {
+    const res = await authService.googleMock(email);
+    const { token, user } = res.data.data;
+    setAuth(token, user);
+    applyPlanTheme(user.plan);
+    return user;
+  };
+
   const register = async (cccd, phone, password, confirmPassword) => {
     const res = await authService.register(cccd, phone, password, confirmPassword);
     const { token, user } = res.data.data;
@@ -48,5 +56,5 @@ export function useAuth() {
     return res.data.data;
   };
 
-  return { user, token, isAuthenticated, login, logout, register, updateProfile, completeRegistration };
+  return { user, token, isAuthenticated, login, googleMockLogin, logout, register, updateProfile, completeRegistration };
 }
