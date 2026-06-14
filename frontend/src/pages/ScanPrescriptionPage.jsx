@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import {
   CheckCircle, AlertCircle, Pill, User, Calendar, FileText, Lock, Crown,
   XCircle, ChevronDown, ChevronUp, Clock, Hash, Stethoscope, BookOpen, Info, Zap,
@@ -25,6 +25,7 @@ export default function ScanPrescriptionPage() {
   const [savedIndices, setSavedIndices] = useState(new Set());
   const [savingIndex, setSavingIndex] = useState(null);
   const [expandedIndex, setExpandedIndex] = useState(null);
+  const analyzedFileRef = useRef(null);
 
   const handleImageScan = useCallback((file) => {
     if (imageUrl) URL.revokeObjectURL(imageUrl);
@@ -101,6 +102,7 @@ export default function ScanPrescriptionPage() {
     setResult(null);
     setSavedIndices(new Set());
     setExpandedIndex(null);
+    analyzedFileRef.current = null;
   }, [imageUrl]);
 
   useEffect(() => {
@@ -109,12 +111,19 @@ export default function ScanPrescriptionPage() {
     }
   }, [isFree]);
 
+  useEffect(() => {
+    if (imageFile && analyzedFileRef.current !== imageFile) {
+      analyzedFileRef.current = imageFile;
+      handleAnalyze();
+    }
+  }, [imageFile, handleAnalyze]);
+
   if (isAnalyzing) {
     return (
       <div className={styles.scanningOverlay}>
         <div className={styles.scanningContent}>
           <div className={styles.scanningSpinner} />
-          <p>Claude AI đang phân tích đơn thuốc...</p>
+          <p>Đang phân tích đơn thuốc...</p>
           <span className={styles.scanningHint}>Thường mất 5–15 giây</span>
         </div>
       </div>
