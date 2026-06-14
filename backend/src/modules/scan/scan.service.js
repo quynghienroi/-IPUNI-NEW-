@@ -28,6 +28,55 @@ function isDiabetesDrug(name) {
   return DIABETES_KEYWORDS.some(k => lower.includes(k));
 }
 
+let medicationsDatabase = null;
+
+function loadMedicationsDatabase() {
+  if (!medicationsDatabase) {
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const dbPath = path.join(__dirname, '../../..', 'database', 'medications-db.json');
+      const data = fs.readFileSync(dbPath, 'utf-8');
+      medicationsDatabase = JSON.parse(data).medications || [];
+    } catch (error) {
+      console.warn('Failed to load medications database:', error.message);
+      medicationsDatabase = [];
+    }
+  }
+  return medicationsDatabase;
+}
+
+function findMedicationInDatabase(drugName) {
+  const db = loadMedicationsDatabase();
+  const lower = (drugName || '').toLowerCase().trim();
+
+  return db.find(med =>
+    med.name.toLowerCase() === lower ||
+    med.aliases.some(alias => alias.toLowerCase() === lower)
+  );
+}
+
+function enrichMedicationWithDatabaseInfo(medication) {
+  const dbMed = findMedicationInDatabase(medication.name);
+
+  if (!dbMed) return medication;
+
+  return {
+    ...medication,
+    detail: {
+      purpose: dbMed.purpose,
+      mechanism: dbMed.mechanism,
+      sideEffects: dbMed.sideEffects,
+      contraindications: dbMed.contraindications,
+      interactions: dbMed.interactions,
+      dosage: dbMed.dosage || medication.dosage,
+      source: dbMed.source,
+      category: dbMed.category,
+      notes: dbMed.notes
+    }
+  };
+}
+
 const PROMPT = `Bạn là dược sĩ lâm sàng chuyên về đái tháo đường, đọc đơn thuốc Việt Nam (kể cả chữ viết tay của bác sĩ).
 
 Phân tích ảnh và trả về JSON HỢP LỆ, KHÔNG kèm bất kỳ text nào ngoài JSON.
@@ -80,7 +129,10 @@ Nếu ảnh quá mờ không đọc được: {"isPrescription": false, "isDiabe
 
 function shapeResult(parsed) {
   const isPrescription = parsed.isPrescription !== false;
-  const medications = parsed.medications || [];
+  let medications = parsed.medications || [];
+
+  // Enrich medications with database information
+  medications = medications.map(enrichMedicationWithDatabaseInfo);
 
   const keywordDiabetes = medications.some(m => isDiabetesDrug(m.name));
   const isDiabetesPrescription =
@@ -171,4 +223,12 @@ async function analyzePrescription(imageBuffer, mimeType) {
   }
 }
 
-module.exports = { analyzePrescription, shapeResult, parseAiJson, isDiabetesDrug };
+module.exports = {
+  analyzePrescription,
+  shapeResult,
+  parseAiJson,
+  isDiabetesDrug,
+  loadMedicationsDatabase,
+  findMedicationInDatabase,
+  enrichMedicationWithDatabaseInfo
+};

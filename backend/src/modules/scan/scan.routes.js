@@ -15,5 +15,6 @@ const upload = multer({
 
 router.use(authMiddleware);
 router.post('/prescription', upload.single('image'), controller.analyzePrescription);
+router.get('/medication/:name', controller.getMedicationDetail);
 
 module.exports = router;
