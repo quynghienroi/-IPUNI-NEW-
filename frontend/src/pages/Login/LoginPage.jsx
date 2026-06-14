@@ -6,7 +6,6 @@ import { useT } from '../../hooks/useT';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
 import { PhoneIcon, GoogleIcon } from '../../components/common/AuthIcons';
-import ImageCarousel from '../../components/common/ImageCarousel';
 import styles from './LoginPage.module.css';
 
 export default function LoginPage() {
@@ -43,14 +42,11 @@ export default function LoginPage() {
     <div className={styles.page}>
       <div className={styles.container}>
         <div className={styles.carouselSection}>
-          <ImageCarousel images={['/dashboard_cute.png']} />
+          <img src="/logo-moi.png" alt="DIA+ Logo" style={{ width: '260px', height: 'auto', objectFit: 'contain', marginBottom: '16px', mixBlendMode: 'multiply' }} />
         </div>
 
         <div className={styles.textContent}>
-          <h1 className={styles.mainTitle}>Nền tảng Y tế DIA+</h1>
-          <p className={styles.mainSubtitle}>
-            Giải pháp toàn diện quản lý bệnh lý,<br />dinh dưỡng và vận động
-          </p>
+          <p className={styles.mainSubtitle}>Giải pháp toàn diện quản lý bệnh lý, dinh dưỡng và vận động</p>
         </div>
 
         {!showEmailForm ? (
@@ -65,9 +61,13 @@ export default function LoginPage() {
             </button>
             
             <div className={styles.fallbackLogin}>
-              <span onClick={() => setShowEmailForm(true)} className={styles.linkText}>
+              <button onClick={() => setShowEmailForm(true)} className={styles.emailBtn}>
                 Đăng nhập bằng Email/Mật khẩu
-              </span>
+              </button>
+            </div>
+            
+            <div className={styles.registerLink}>
+              Chưa có tài khoản? <Link to="/register" className={styles.link}>Đăng ký ngay</Link>
             </div>
           </div>
         ) : (
@@ -82,9 +82,9 @@ export default function LoginPage() {
               </Button>
             </form>
             <div className={styles.fallbackLogin}>
-               <span onClick={() => setShowEmailForm(false)} className={styles.linkText}>
+               <button onClick={() => setShowEmailForm(false)} className={styles.emailBtn}>
                 Quay lại
-              </span>
+              </button>
             </div>
           </div>
         )}

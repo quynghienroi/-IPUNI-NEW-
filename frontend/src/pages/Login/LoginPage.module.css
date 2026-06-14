@@ -21,6 +21,8 @@
 .carouselSection {
   margin-top: 20px;
   margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
 }
 
 .textContent {
@@ -105,19 +107,34 @@
 
 .fallbackLogin {
   text-align: center;
-  margin-top: 24px;
+  margin-top: 8px;
+  width: 100%;
 }
 
-.linkText {
-  color: #6B7280;
-  font-size: 14px;
+.emailBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 56px;
+  border-radius: 28px;
+  font-size: 16px;
+  font-weight: 700;
   cursor: pointer;
-  text-decoration: underline;
-  transition: color 0.2s;
+  transition: all 0.2s ease;
+  background-color: transparent;
+  color: #00A693;
+  border: 1.5px solid #00A693;
+  padding: 8px 16px;
+  box-sizing: border-box;
 }
 
-.linkText:hover {
-  color: #374151;
+.emailBtn:hover {
+  background-color: rgba(0, 166, 147, 0.05);
+}
+
+.emailBtn:active {
+  transform: scale(0.98);
 }
 
 .emailFormContainer {
@@ -150,4 +167,21 @@
   font-size: 14px;
   margin-bottom: 20px;
   text-align: center;
+}
+
+.registerLink {
+  text-align: center;
+  font-size: 14px;
+  color: #6B7280;
+  margin-top: 16px;
+}
+
+.link {
+  color: #00A693;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
 }
