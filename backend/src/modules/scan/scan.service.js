@@ -1,4 +1,5 @@
 // Using Ollama locally for AI vision instead of external API
+const rxnormService = require('../../services/rxnorm.service');
 
 const DIABETES_KEYWORDS = [
   'metformin', 'glucophage', 'diamet', 'tiaphage', 'gluformin', 'glucofast',
@@ -54,6 +55,36 @@ function findMedicationInDatabase(drugName) {
     med.name.toLowerCase() === lower ||
     med.aliases.some(alias => alias.toLowerCase() === lower)
   );
+}
+
+async function enrichMedicationWithRxNorm(medication) {
+  try {
+    // Lấy thông tin từ RxNorm API (Mayo Clinic, ADA data)
+    const rxnormData = await rxnormService.getDiabetesDrugInfo(medication.name);
+
+    if (!rxnormData || rxnormData.error) {
+      // Fallback to local database
+      return enrichMedicationWithDatabaseInfo(medication);
+    }
+
+    return {
+      ...medication,
+      detail: {
+        purpose: rxnormData.purpose,
+        mechanism: rxnormData.mechanism,
+        sideEffects: rxnormData.sideEffects,
+        contraindications: rxnormData.contraindications,
+        interactions: rxnormData.interactions || [],
+        dosage: medication.dosage || 'Theo hướng dẫn bác sĩ',
+        source: rxnormData.source,
+        rxnormLink: rxnormData.rxnormLink
+      }
+    };
+  } catch (error) {
+    console.error('enrichMedicationWithRxNorm error:', error.message);
+    // Fallback to database
+    return enrichMedicationWithDatabaseInfo(medication);
+  }
 }
 
 function enrichMedicationWithDatabaseInfo(medication) {
@@ -127,12 +158,12 @@ Phần "detail" PHẢI điền cho MỌI thuốc, nội dung dựa trên kiến 
 
 Nếu ảnh quá mờ không đọc được: {"isPrescription": false, "isDiabetesPrescription": false, "rejectionReason": null, "medications": [], "error": "Không thể đọc ảnh đơn thuốc, vui lòng chụp rõ hơn"}`;
 
-function shapeResult(parsed) {
+async function shapeResult(parsed) {
   const isPrescription = parsed.isPrescription !== false;
   let medications = parsed.medications || [];
 
-  // Enrich medications with database information
-  medications = medications.map(enrichMedicationWithDatabaseInfo);
+  // Enrich medications with RxNorm data (Mayo Clinic, ADA sources)
+  medications = await Promise.all(medications.map(med => enrichMedicationWithRxNorm(med)));
 
   const keywordDiabetes = medications.some(m => isDiabetesDrug(m.name));
   const isDiabetesPrescription =
@@ -196,7 +227,7 @@ async function analyzePrescription(imageBuffer, mimeType) {
     console.log('Ollama response text length:', text.length);
 
     let parsed = parseAiJson(text);
-    return shapeResult(parsed);
+    return await shapeResult(parsed);
 
   } catch (error) {
     console.error('Ollama Error:', error.message);
@@ -230,5 +261,6 @@ module.exports = {
   isDiabetesDrug,
   loadMedicationsDatabase,
   findMedicationInDatabase,
-  enrichMedicationWithDatabaseInfo
+  enrichMedicationWithDatabaseInfo,
+  enrichMedicationWithRxNorm
 };

@@ -222,7 +222,7 @@ export default function ScanPrescriptionPage() {
                     const saving = savingIndex === i;
                     const expanded = expandedIndex === i;
                     const detail = med.detail || {};
-                    const hasDetail = detail.purpose || detail.mechanism || detail.sideEffects;
+                    const hasDetail = detail.purpose || detail.mechanism || detail.sideEffects || detail.contraindications || (detail.interactions && detail.interactions.length > 0);
                     return (
                       <div key={i} className={`${styles.medCard} ${saved ? styles.medCardSaved : ''}`}>
                         <div className={styles.medHeader}>
@@ -287,6 +287,18 @@ export default function ScanPrescriptionPage() {
                               <div className={styles.detailItem}>
                                 <span className={styles.detailItemLabel}>Tác dụng phụ cần lưu ý</span>
                                 <p>{detail.sideEffects}</p>
+                              </div>
+                            )}
+                            {detail.contraindications && (
+                              <div className={styles.detailItem}>
+                                <span className={styles.detailItemLabel}>⚠️ Không dùng cho</span>
+                                <p>{detail.contraindications}</p>
+                              </div>
+                            )}
+                            {detail.interactions && detail.interactions.length > 0 && (
+                              <div className={styles.detailItem}>
+                                <span className={styles.detailItemLabel}>Tương tác thuốc</span>
+                                <p>{Array.isArray(detail.interactions) ? detail.interactions.join(', ') : detail.interactions}</p>
                               </div>
                             )}
                             {detail.source && (
