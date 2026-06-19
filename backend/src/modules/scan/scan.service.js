@@ -1,14 +1,9 @@
-<<<<<<< HEAD
-// Using Ollama locally for AI vision instead of external API
-const rxnormService = require('../../services/rxnorm.service');
-=======
 const path = require('path');
 const fs = require('fs');
 const Tesseract = require('tesseract.js');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const Anthropic = require('@anthropic-ai/sdk');
 const logger = require('../../utils/logger');
->>>>>>> origin/feat/optimize-prescription-scan
 
 const DIABETES_KEYWORDS = [
   'metformin', 'glucophage', 'diamet', 'tiaphage', 'gluformin', 'glucofast',
@@ -42,127 +37,6 @@ function isDiabetesDrug(name) {
   return DIABETES_KEYWORDS.some(k => lower.includes(k));
 }
 
-<<<<<<< HEAD
-let medicationsDatabase = null;
-
-function loadMedicationsDatabase() {
-  if (!medicationsDatabase) {
-    try {
-      const fs = require('fs');
-      const path = require('path');
-      const dbPath = path.join(__dirname, '../../..', 'database', 'medications-db.json');
-      const data = fs.readFileSync(dbPath, 'utf-8');
-      medicationsDatabase = JSON.parse(data).medications || [];
-    } catch (error) {
-      console.warn('Failed to load medications database:', error.message);
-      medicationsDatabase = [];
-    }
-  }
-  return medicationsDatabase;
-}
-
-function findMedicationInDatabase(drugName) {
-  const db = loadMedicationsDatabase();
-  const lower = (drugName || '').toLowerCase().trim();
-
-  return db.find(med =>
-    med.name.toLowerCase() === lower ||
-    med.aliases.some(alias => alias.toLowerCase() === lower)
-  );
-}
-
-async function enrichMedicationWithRxNorm(medication) {
-  try {
-    // Lấy thông tin từ RxNorm API (Mayo Clinic, ADA data)
-    const rxnormData = await rxnormService.getDiabetesDrugInfo(medication.name);
-
-    if (!rxnormData || rxnormData.error) {
-      // Fallback to local database
-      return enrichMedicationWithDatabaseInfo(medication);
-    }
-
-    return {
-      ...medication,
-      detail: {
-        purpose: rxnormData.purpose,
-        mechanism: rxnormData.mechanism,
-        sideEffects: rxnormData.sideEffects,
-        contraindications: rxnormData.contraindications,
-        interactions: rxnormData.interactions || [],
-        dosage: medication.dosage || 'Theo hướng dẫn bác sĩ',
-        source: rxnormData.source,
-        rxnormLink: rxnormData.rxnormLink
-      }
-    };
-  } catch (error) {
-    console.error('enrichMedicationWithRxNorm error:', error.message);
-    // Fallback to database
-    return enrichMedicationWithDatabaseInfo(medication);
-  }
-}
-
-function enrichMedicationWithDatabaseInfo(medication) {
-  const dbMed = findMedicationInDatabase(medication.name);
-
-  if (!dbMed) return medication;
-
-  return {
-    ...medication,
-    detail: {
-      purpose: dbMed.purpose,
-      mechanism: dbMed.mechanism,
-      sideEffects: dbMed.sideEffects,
-      contraindications: dbMed.contraindications,
-      interactions: dbMed.interactions,
-      dosage: dbMed.dosage || medication.dosage,
-      source: dbMed.source,
-      category: dbMed.category,
-      notes: dbMed.notes
-    }
-  };
-}
-
-const PROMPT = `Bạn là dược sĩ lâm sàng chuyên về đái tháo đường, đọc đơn thuốc Việt Nam (kể cả chữ viết tay của bác sĩ).
-
-Phân tích ảnh và trả về JSON HỢP LỆ, KHÔNG kèm bất kỳ text nào ngoài JSON.
-
-BƯỚC 1 — Xác định loại đơn:
-- "isPrescription": true nếu ảnh là một đơn thuốc / toa thuốc y tế; false nếu không phải.
-- "isDiabetesPrescription": true CHỈ KHI đơn này dùng để điều trị bệnh đái tháo đường (tiểu đường) — căn cứ vào chẩn đoán ghi trên đơn HOẶC có ít nhất một thuốc hạ đường huyết (metformin, gliclazide, glimepiride, insulin, sitagliptin, empagliflozin, dapagliflozin, ...). Nếu đơn cho bệnh khác (cảm cúm, huyết áp đơn thuần, dạ dày, ...) thì để false.
-- "rejectionReason": nếu isDiabetesPrescription = false, ghi ngắn gọn lý do bằng tiếng Việt (vd: "Đây là đơn thuốc điều trị cảm cúm, không phải đái tháo đường"). Nếu là đơn tiểu đường thì để null.
-
-Nếu KHÔNG phải đơn tiểu đường, CHỈ cần trả về:
-{"isPrescription": <true/false>, "isDiabetesPrescription": false, "rejectionReason": "...", "medications": []}
-
-BƯỚC 2 — Nếu LÀ đơn tiểu đường, trích xuất đầy đủ:
-{
-  "isPrescription": true,
-  "isDiabetesPrescription": true,
-  "rejectionReason": null,
-  "doctorName": "tên bác sĩ nếu đọc được, hoặc null",
-  "prescriptionDate": "YYYY-MM-DD hoặc null",
-  "diagnosis": "chẩn đoán ghi trên đơn, hoặc null",
-  "doctorNotes": "diễn giải lại TOÀN BỘ chữ viết tay và lời dặn của bác sĩ thành tiếng Việt rõ ràng (vd: tái khám sau 1 tháng, kiêng đường, tập thể dục...). null nếu không có",
-  "medications": [
-    {
-      "name": "tên thuốc (chỉ tên, không kèm liều)",
-      "dosage": "hàm lượng mỗi viên (vd: 500mg, 30mg)",
-      "quantity": "tổng số lượng kê (vd: 60 viên, 2 hộp), hoặc null",
-      "amountPerDose": "lượng mỗi lần uống (vd: 1 viên, nửa viên)",
-      "timesPerDay": <số lần uống trong 1 ngày, kiểu số>,
-      "frequency": "mô tả tần suất (vd: 2 lần/ngày, sáng-tối)",
-      "times": ["07:00"],
-      "instructions": "cách dùng: trước ăn / sau ăn / trước ngủ ...",
-      "isDiabetesDrug": <true nếu là thuốc hạ đường huyết, false nếu thuốc hỗ trợ khác>,
-      "detail": {
-        "purpose": "công dụng: thuốc này dùng để làm gì cho bệnh nhân tiểu đường",
-        "mechanism": "cơ chế / giải quyết vấn đề gì (vd: giảm đường huyết bằng cách...)",
-        "sideEffects": "tác dụng phụ thường gặp cần lưu ý",
-        "source": "nguồn tham khảo uy tín (vd: Hiệp hội Đái tháo đường Hoa Kỳ ADA, Mayo Clinic, Vinmec, MedlinePlus)"
-      }
-    }
-  ]
-=======
 function isDiabetesDiagnosis(diagnosis) {
   const lower = (diagnosis || '').toLowerCase().trim();
   return lower.includes('đái tháo đường') || 
@@ -170,7 +44,6 @@ function isDiabetesDiagnosis(diagnosis) {
          /\bđtđ\b/.test(lower) || 
          lower.includes('diabetes') ||
          lower.includes('sugar');
->>>>>>> origin/feat/optimize-prescription-scan
 }
 
 const PROMPT = `You are an expert medical assistant. Analyze the medical prescription (either from the image directly or from the OCR text provided) and convert it into a structured JSON object.
@@ -205,12 +78,9 @@ JSON Schema:
   }]
 }`;
 
-async function shapeResult(parsed) {
+function shapeResult(parsed) {
   const isPrescription = parsed.isPrescription !== false;
-  let medications = parsed.medications || [];
-
-  // Enrich medications with RxNorm data (Mayo Clinic, ADA sources)
-  medications = await Promise.all(medications.map(med => enrichMedicationWithRxNorm(med)));
+  const medications = parsed.medications || [];
 
   const keywordDiabetes = medications.some(m => isDiabetesDrug(m.name));
   const isDiabetesPrescription =
@@ -309,31 +179,11 @@ async function analyzePrescription(imageBuffer, mimeType) {
         generationConfig: { responseMimeType: 'application/json' }
       });
 
-<<<<<<< HEAD
-    const text = response.data.response || '';
-    console.log('Ollama response text length:', text.length);
-
-    let parsed = parseAiJson(text);
-    return await shapeResult(parsed);
-
-  } catch (error) {
-    console.error('Ollama Error:', error.message);
-
-    if (error.code === 'ECONNREFUSED') {
-      return {
-        isPrescription: false,
-        isDiabetesPrescription: false,
-        medications: [],
-        hasDiabetesDrugs: false,
-        diabetesDrugs: [],
-        error: 'Ollama server không hoạt động. Vui lòng khởi chạy Ollama.'
-=======
       const imagePart = {
         inlineData: {
           data: imageBase64,
           mimeType: mimeType || 'image/jpeg'
         }
->>>>>>> origin/feat/optimize-prescription-scan
       };
 
       const result = await model.generateContent([
@@ -474,13 +324,4 @@ ${ocrText}
   return result;
 }
 
-module.exports = {
-  analyzePrescription,
-  shapeResult,
-  parseAiJson,
-  isDiabetesDrug,
-  loadMedicationsDatabase,
-  findMedicationInDatabase,
-  enrichMedicationWithDatabaseInfo,
-  enrichMedicationWithRxNorm
-};
+module.exports = { analyzePrescription, shapeResult, parseAiJson, isDiabetesDrug };
