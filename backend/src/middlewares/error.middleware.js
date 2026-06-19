@@ -1,5 +1,7 @@
+const logger = require('../utils/logger');
+
 function errorMiddleware(err, req, res, next) {
-  console.error(err);
+  logger.error(`${req.method} ${req.originalUrl} - Error: ${err.message}`, err);
   const status = err.status || 500;
   res.status(status).json({
     success: false,

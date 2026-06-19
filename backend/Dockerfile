@@ -16,3 +16,4 @@ EXPOSE 3001
 
 # The start script from package.json
 CMD ["npm", "start"]
+    

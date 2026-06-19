@@ -1,4 +1,4 @@
-﻿import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { Camera } from 'lucide-react';
 import styles from './ScanCamera.module.css';
 
@@ -15,19 +15,31 @@ export default function ScanCamera({ onImageScan }) {
     }
   };
 
-  const handleCameraClick = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' }
-      });
+  useEffect(() => {
+    let activeStream = null;
+    const startCamera = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment' }
+        });
+        activeStream = stream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          cameraSectionRef.current?.classList.add(styles.cameraActive);
+        }
+      } catch (err) {
+        console.error('Camera error:', err);
+        fileInputRef.current?.click();
+      }
+    };
+    startCamera();
 
-      videoRef.current.srcObject = stream;
-      cameraSectionRef.current?.classList.add(styles.cameraActive);
-    } catch (err) {
-      console.error('Camera error:', err);
-      fileInputRef.current?.click();
-    }
-  };
+    return () => {
+      if (activeStream) {
+        activeStream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, []);
 
   const handleCapture = () => {
     const context = canvasRef.current.getContext('2d');

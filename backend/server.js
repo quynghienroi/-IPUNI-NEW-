@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const logger = require('./src/utils/logger');
 const { errorMiddleware } = require('./src/middlewares/error.middleware');
 
 const authRoutes = require('./src/modules/auth/auth.routes');
@@ -17,6 +18,12 @@ const PORT = process.env.PORT || 3001;
 app.use(cors({ origin: '*', credentials: true }));
 app.use(express.json());
 
+// Request logger middleware
+app.use((req, res, next) => {
+  logger.info(`[Hệ thống] Nhận yêu cầu: ${req.method} ${req.originalUrl}`);
+  next();
+});
+
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/metrics', metricsRoutes);
 app.use('/api/v1/medications', medicationsRoutes);
@@ -30,6 +37,6 @@ app.get('/health', (req, res) => res.json({ status: 'ok' }));
 app.use(errorMiddleware);
 
 const server = app.listen(PORT, () => {
-  console.log(`DIA+ Backend running on http://localhost:${PORT}`);
+  logger.info(`[Hệ thống] Server DIA+ đang khởi động và chạy thành công trên cổng: ${PORT}`);
 });
 server.timeout = 300000;
