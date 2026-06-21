@@ -81,3 +81,29 @@
   padding: 6px 12px;
   border-radius: 20px;
 }
+
+.calendarBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  background: #1B5FA6;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 18px;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.calendarBtn:hover {
+  background: #154b85;
+}
+
+.calendarBtn:active {
+  transform: scale(0.98);
+}

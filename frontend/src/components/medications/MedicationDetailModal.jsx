@@ -1,6 +1,7 @@
-import { Pill, Clock } from 'lucide-react';
+import { Pill, Clock, Calendar } from 'lucide-react';
 import Modal from '../common/Modal';
 import { withDoctorPrefix } from '../../utils/doctor';
+import { exportMedicationToCalendar } from '../../utils/calendar';
 import styles from './MedicationDetailModal.module.css';
 
 function Row({ label, value }) {
@@ -47,16 +48,25 @@ export default function MedicationDetailModal({ medication, onClose }) {
       </div>
 
       {times.length > 0 && (
-        <div className={styles.section}>
-          <div className={styles.sectionTitle}>Giờ uống</div>
-          <div className={styles.timeList}>
-            {times.map((tm, i) => (
-              <div key={i} className={styles.timeItem}>
-                <Clock size={14} color="#1B5FA6" /> {tm}
-              </div>
-            ))}
+        <>
+          <div className={styles.section}>
+            <div className={styles.sectionTitle}>Giờ uống</div>
+            <div className={styles.timeList}>
+              {times.map((tm, i) => (
+                <div key={i} className={styles.timeItem}>
+                  <Clock size={14} color="#1B5FA6" /> {tm}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+
+          <button 
+            className={styles.calendarBtn} 
+            onClick={() => exportMedicationToCalendar(med)}
+          >
+            <Calendar size={16} /> Thêm lịch nhắc vào điện thoại
+          </button>
+        </>
       )}
     </Modal>
   );

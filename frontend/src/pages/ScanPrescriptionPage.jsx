@@ -42,8 +42,10 @@ export default function ScanPrescriptionPage() {
 
       if (data.error) {
         showToast(data.error, 'error');
+      } else if (!data.isPrescription) {
+        showToast('Không tiếp nhận đơn thuốc này. Ảnh không phải là một đơn thuốc. Vui lòng chụp lại đơn thuốc đái tháo đường.', 'error');
       } else if (!data.isDiabetesPrescription) {
-        showToast('Đơn thuốc không thuộc bệnh đái tháo đường', 'error');
+        showToast('Không tiếp nhận đơn thuốc này. Đây không phải đơn thuốc điều trị đái tháo đường (tiểu đường). DIA+ chỉ hỗ trợ phân tích đơn thuốc tiểu đường.', 'error');
       }
     } catch (err) {
       const msg = err.response?.data?.message || 'Lỗi kết nối đến server';

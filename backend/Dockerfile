@@ -14,6 +14,6 @@ COPY . .
 
 EXPOSE 3001
 
-# The start script from package.json
-CMD ["npm", "start"]
+# Run migrations and start backend server
+CMD ["sh", "-c", "npm run migrate && npm start"]
     

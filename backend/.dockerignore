@@ -1,3 +1,4 @@
 node_modules
-database/diaplus.sqlite
+database/*.db
+database/*.sqlite
 .env
