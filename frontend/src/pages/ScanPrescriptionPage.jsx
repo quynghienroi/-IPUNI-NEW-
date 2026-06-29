@@ -222,7 +222,7 @@ export default function ScanPrescriptionPage() {
                   {result.medications.map((med, i) => {
                     const expanded = expandedIndex === i;
                     const detail = med.detail || {};
-                    const hasDetail = detail.purpose || detail.mechanism || detail.sideEffects || detail.contraindications || (detail.interactions && detail.interactions.length > 0);
+                    const hasDetail = detail.purpose || detail.mechanism || detail.contraindications || (detail.interactions && detail.interactions.length > 0);
                     return (
                       <div key={i} className={styles.medCard}>
                         <div className={styles.medHeader}>
@@ -281,12 +281,6 @@ export default function ScanPrescriptionPage() {
                               <div className={styles.detailItem}>
                                 <span className={styles.detailItemLabel}>Giải quyết vấn đề gì</span>
                                 <p>{detail.mechanism}</p>
-                              </div>
-                            )}
-                            {detail.sideEffects && (
-                              <div className={styles.detailItem}>
-                                <span className={styles.detailItemLabel}>Tác dụng phụ cần lưu ý</span>
-                                <p>{detail.sideEffects}</p>
                               </div>
                             )}
                             {detail.contraindications && (

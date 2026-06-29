@@ -111,7 +111,6 @@ JSON Schema:
     "detail": {
       "purpose": "Brief drug purpose in Vietnamese (dựa theo Dược thư Quốc gia Việt Nam)",
       "mechanism": "Brief mechanism of action in Vietnamese (dựa theo Dược thư Quốc gia Việt Nam)",
-      "sideEffects": "Common side effects in Vietnamese (dựa theo Dược thư Quốc gia Việt Nam)",
       "source": "Mặc định luôn điền 'Dược thư Quốc gia Việt Nam (trungtamthuoc.com)'"
     }
   }]
