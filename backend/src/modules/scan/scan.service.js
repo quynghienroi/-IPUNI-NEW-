@@ -5,6 +5,40 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const Anthropic = require('@anthropic-ai/sdk');
 const logger = require('../../utils/logger');
 
+// Load medications database for lookup
+let medicationsDb = [];
+try {
+  const dbPath = path.join(__dirname, '../../../database/medications-db.json');
+  const rawData = fs.readFileSync(dbPath, 'utf-8');
+  medicationsDb = JSON.parse(rawData).medications || [];
+  logger.info(`[Scan Service] Loaded ${medicationsDb.length} medications from database.`);
+} catch (err) {
+  logger.warn('[Scan Service] Could not load medications-db.json: ' + err.message);
+}
+
+/**
+ * Tra cứu thông tin chi tiết thuốc từ database medications-db.json
+ * @param {string} name - Tên thuốc cần tra cứu
+ * @returns {object|null} - Thông tin thuốc hoặc null nếu không tìm thấy
+ */
+function findMedicationInDatabase(name) {
+  if (!name) return null;
+  const lower = name.toLowerCase().trim();
+  
+  return medicationsDb.find(med => {
+    // Match by primary name
+    if (med.name.toLowerCase() === lower) return true;
+    // Match by aliases
+    if (med.aliases && med.aliases.some(alias => alias.toLowerCase() === lower)) return true;
+    // Partial match - medication name contains search term or vice versa
+    if (med.name.toLowerCase().includes(lower) || lower.includes(med.name.toLowerCase())) return true;
+    if (med.aliases && med.aliases.some(alias => 
+      alias.toLowerCase().includes(lower) || lower.includes(alias.toLowerCase())
+    )) return true;
+    return false;
+  }) || null;
+}
+
 const DIABETES_KEYWORDS = [
   'metformin', 'glucophage', 'diamet', 'tiaphage', 'gluformin', 'glucofast',
   'glibenclamide', 'daonil', 'maninil', 'glibenhexal',
@@ -367,4 +401,4 @@ ${ocrText}
   throw new Error('Vui lòng cấu hình GEMINI_API_KEY hoặc ANTHROPIC_API_KEY và đảm bảo kết nối mạng ổn định.');
 }
 
-module.exports = { analyzePrescription, shapeResult, parseAiJson, isDiabetesDrug };
+module.exports = { analyzePrescription, shapeResult, parseAiJson, isDiabetesDrug, findMedicationInDatabase };

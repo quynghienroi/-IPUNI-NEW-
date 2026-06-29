@@ -15,11 +15,19 @@ api.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.response?.status === 401) {
-      localStorage.removeItem('diaplus_token');
-      window.location.href = '/login';
+      // Only redirect to login if the 401 came from an auth-related endpoint
+      // (e.g. /auth/me returning "token expired"). For other endpoints (e.g. /scan),
+      // the 401 might be from an external AI API key issue, not from JWT expiration.
+      const url = err.config?.url || '';
+      const isAuthEndpoint = url.includes('/auth/');
+      if (isAuthEndpoint) {
+        localStorage.removeItem('diaplus_token');
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(err);
   }
 );
 
 export default api;
+

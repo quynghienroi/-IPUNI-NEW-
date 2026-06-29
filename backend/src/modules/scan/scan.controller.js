@@ -14,8 +14,12 @@ async function analyzePrescription(req, res, next) {
 
     sendSuccess(res, result, 'Phân tích đơn thuốc thành công');
   } catch (err) {
-    if (err.status) return sendError(res, err.message, err.status);
-    next(err);
+    console.error('[Scan Controller] Error:', err.message);
+    // IMPORTANT: Never return 401 from scan endpoint — external AI API errors
+    // (Gemini/Anthropic) may have status 401 (invalid API key), but this should
+    // NOT cause the frontend to think the user's JWT is invalid and redirect to login.
+    if (err.status && err.status !== 401) return sendError(res, err.message, err.status);
+    return sendError(res, err.message || 'Lỗi phân tích đơn thuốc. Vui lòng thử lại.', 500);
   }
 }
 
@@ -35,3 +39,4 @@ async function getMedicationDetail(req, res, next) {
 }
 
 module.exports = { analyzePrescription, getMedicationDetail };
+

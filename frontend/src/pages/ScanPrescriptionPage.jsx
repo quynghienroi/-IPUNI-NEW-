@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback } from 'react';
 import {
   CheckCircle, AlertCircle, Pill, User, Calendar, FileText,
   XCircle, ChevronDown, ChevronUp, Clock, Hash, Stethoscope, BookOpen, Info,
@@ -20,7 +20,7 @@ export default function ScanPrescriptionPage() {
   const [savedIndices, setSavedIndices] = useState(new Set());
   const [savingIndex, setSavingIndex] = useState(null);
   const [expandedIndex, setExpandedIndex] = useState(null);
-  const analyzedFileRef = useRef(null);
+
 
   const handleImageScan = useCallback((file) => {
     if (imageUrl) URL.revokeObjectURL(imageUrl);
@@ -85,15 +85,11 @@ export default function ScanPrescriptionPage() {
     setResult(null);
     setSavedIndices(new Set());
     setExpandedIndex(null);
-    analyzedFileRef.current = null;
+
   }, [imageUrl]);
 
-  useEffect(() => {
-    if (imageFile && analyzedFileRef.current !== imageFile) {
-      analyzedFileRef.current = imageFile;
-      handleAnalyze();
-    }
-  }, [imageFile, handleAnalyze]);
+
+
   if (isAnalyzing) {
     return (
       <div className={styles.scanningOverlay}>
