@@ -5,9 +5,9 @@ import { useT } from '../../hooks/useT';
 import useLangStore from '../../store/langStore';
 
 const LANG_FLAGS = [
-  { code: 'vi', img: 'https://flagcdn.com/w40/vn.png', label: 'Tiếng Việt' },
-  { code: 'en', img: 'https://flagcdn.com/w40/gb.png', label: 'English' },
-  { code: 'lo', img: 'https://flagcdn.com/w40/la.png', label: 'ພາສາລາວ' },
+  { code: 'vi', emoji: '🇻🇳', label: 'Tiếng Việt' },
+  { code: 'en', emoji: '🇬🇧', label: 'English' },
+  { code: 'lo', emoji: '🇱🇦', label: 'ພາສາລາວ' },
 ];
 import UserProfileModal from './UserProfileModal';
 import SettingsModal from './SettingsModal';
@@ -80,7 +80,7 @@ export default function UserMenu() {
       <div className={styles.wrap}>
         <button
           ref={buttonRef}
-          className={styles.userBtn}
+          className={`${styles.userBtn} user-menu-btn`}
           onClick={handleToggle}
           title={user?.name || 'User'}
         >
@@ -99,14 +99,15 @@ export default function UserMenu() {
               <Globe size={15} className={styles.langIcon} />
               <span className={styles.langRowLabel}>{t.userMenu.language || 'Ngôn ngữ'}</span>
               <div className={styles.langFlags}>
-                {LANG_FLAGS.map(({ code, img, label }) => (
+                {LANG_FLAGS.map(({ code, emoji, label }) => (
                   <button
                     key={code}
                     className={`${styles.langFlagBtn} ${lang === code ? styles.langFlagActive : ''}`}
                     onClick={() => setLang(code)}
                     title={label}
+                    style={{ fontSize: 16 }}
                   >
-                    <img src={img} alt={label} className={styles.langFlagImg} />
+                    {emoji}
                   </button>
                 ))}
               </div>

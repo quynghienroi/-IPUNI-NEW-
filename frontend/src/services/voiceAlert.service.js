@@ -9,20 +9,14 @@ localforage.config({
 });
 
 export const ALERT_TYPES = {
-  MED_MORNING: 'med_morning',
-  MED_NOON: 'med_noon',
-  MED_EVENING: 'med_evening',
-  MED_NIGHT: 'med_night',
+  MED_ALL: 'med_all',
   SUGAR_HIGH: 'sugar_high',
   SUGAR_LOW: 'sugar_low',
   BP_LOW: 'bp_low'
 };
 
 export const DEFAULT_TTS_TEXTS = {
-  [ALERT_TYPES.MED_MORNING]: "Chào bạn, đã đến giờ uống thuốc buổi sáng.",
-  [ALERT_TYPES.MED_NOON]: "Chào bạn, đã đến giờ uống thuốc buổi trưa rồi.",
-  [ALERT_TYPES.MED_EVENING]: "Chào bạn, đã đến giờ uống thuốc buổi chiều.",
-  [ALERT_TYPES.MED_NIGHT]: "Chào bạn, đã đến giờ uống thuốc buổi tối.",
+  [ALERT_TYPES.MED_ALL]: "Chào bạn, đã đến giờ uống thuốc.",
   [ALERT_TYPES.SUGAR_HIGH]: "Chào bạn, hãy uống ngay một cốc nước lọc lớn và tạm ngưng ăn đồ ngọt nhé. Hiện tại chỉ số đường huyết đang hơi cao một chút. Hãy nghỉ ngơi thư giãn và theo dõi thêm.",
   [ALERT_TYPES.SUGAR_LOW]: "Chào bạn, hãy uống ngay nửa ly nước đường, nước trái cây hoặc ăn một vài viên kẹo ngọt nhé. Hiện tại chỉ số đường huyết đang hơi thấp. Bạn hãy nghỉ ngơi tại chỗ và báo cho người nhà biết.",
   [ALERT_TYPES.BP_LOW]: "Chào bạn, hãy từ từ nằm xuống hoặc ngồi nghỉ tại chỗ nhé, tuyệt đối không đứng dậy đột ngột. Hiện tại chỉ số huyết áp đang hơi thấp. Bạn cứ hít thở sâu, giữ bình tĩnh và nhờ người gọi cho người thân."

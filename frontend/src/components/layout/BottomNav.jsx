@@ -7,7 +7,7 @@ export default function BottomNav() {
   const t = useT();
 
   const LEFT_ITEMS = [
-    { to: '/', icon: Home, label: t.nav.home, exact: true },
+    { to: '/dashboard', icon: Home, label: t.nav.home, exact: true },
     { to: '/metrics', icon: Activity, label: t.nav.metrics },
   ];
 

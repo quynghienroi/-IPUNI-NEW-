@@ -4,9 +4,9 @@ import useLangStore from '../../store/langStore';
 import styles from './LangButton.module.css';
 
 const LANGS = [
-  { code: 'vi', img: 'https://flagcdn.com/w40/vn.png', label: 'Tiếng Việt' },
-  { code: 'en', img: 'https://flagcdn.com/w40/gb.png', label: 'English' },
-  { code: 'lo', img: 'https://flagcdn.com/w40/la.png', label: 'ພາສາລາວ' },
+  { code: 'vi', emoji: '🇻🇳', label: 'Tiếng Việt' },
+  { code: 'en', emoji: '🇬🇧', label: 'English' },
+  { code: 'lo', emoji: '🇱🇦', label: 'ພາສາລາວ' },
 ];
 
 export default function LangButton() {
@@ -50,8 +50,9 @@ export default function LangButton() {
         className={styles.btn}
         onClick={handleToggle}
         title={current.label}
+        style={{ fontSize: 20 }}
       >
-        <img src={current.img} alt={current.label} className={styles.flagImg} />
+        {current.emoji}
       </button>
 
       {open && createPortal(
@@ -60,13 +61,13 @@ export default function LangButton() {
           className={styles.dropdown}
           style={{ top: pos.top, right: pos.right }}
         >
-          {LANGS.map(({ code, img, label }) => (
+          {LANGS.map(({ code, emoji, label }) => (
             <button
               key={code}
               className={`${styles.option} ${lang === code ? styles.optionActive : ''}`}
               onClick={() => handleSelect(code)}
             >
-              <img src={img} alt={label} className={styles.optionFlagImg} />
+              <span style={{ fontSize: 18, marginRight: 8 }}>{emoji}</span>
               <span className={styles.optionLabel}>{label}</span>
               {lang === code && <span className={styles.check}>✓</span>}
             </button>

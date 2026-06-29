@@ -62,6 +62,8 @@
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
   padding: 16px;
+  width: 100%;
+  overflow: hidden;
 }
 
 .medicationHeader {
@@ -116,6 +118,8 @@
   border: 2px solid var(--color-border);
   padding: 16px;
   background: linear-gradient(135deg, rgba(168,85,247,0.04) 0%, rgba(236,72,153,0.04) 100%);
+  width: 100%;
+  overflow: hidden;
 }
 
 .cuteMedHeader {

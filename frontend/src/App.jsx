@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import useAuthStore from './store/authStore';
 import { authService } from './services/auth.service';
 import AppLayout from './components/layout/AppLayout';
+import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/Login/LoginPage';
 import RegisterPage from './pages/Register/RegisterPage';
 import DashboardPage from './pages/Dashboard/DashboardPage';
@@ -34,7 +35,8 @@ function AppRoutes() {
     <Routes>
       <Route path="/login" element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />} />
       <Route path="/register" element={isAuthenticated ? <Navigate to="/" replace /> : <RegisterPage />} />
-      <Route path="/" element={
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/dashboard" element={
         <ProtectedRoute>
           <AppLayout>
             <DashboardPage />
@@ -90,7 +92,7 @@ function AppRoutes() {
           </AppLayout>
         </ProtectedRoute>
       } />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
 }

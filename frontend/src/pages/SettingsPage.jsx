@@ -5,27 +5,9 @@ import styles from './SettingsPage.module.css';
 
 const ALERT_CONFIG = [
   {
-    id: ALERT_TYPES.MED_MORNING,
-    title: 'Nhắc uống thuốc Sáng',
-    desc: 'Phát khi đến giờ uống thuốc buổi sáng (07:00)',
-    icon: <Settings size={18} />
-  },
-  {
-    id: ALERT_TYPES.MED_NOON,
-    title: 'Nhắc uống thuốc Trưa',
-    desc: 'Phát khi đến giờ uống thuốc buổi trưa (12:00)',
-    icon: <Settings size={18} />
-  },
-  {
-    id: ALERT_TYPES.MED_EVENING,
-    title: 'Nhắc uống thuốc Chiều',
-    desc: 'Phát khi đến giờ uống thuốc buổi chiều (17:00)',
-    icon: <Settings size={18} />
-  },
-  {
-    id: ALERT_TYPES.MED_NIGHT,
-    title: 'Nhắc uống thuốc Tối',
-    desc: 'Phát khi đến giờ uống thuốc buổi tối (20:00)',
+    id: ALERT_TYPES.MED_ALL,
+    title: 'Nhắc uống thuốc',
+    desc: 'Phát khi đến giờ uống thuốc (tự động đọc tên thuốc)',
     icon: <Settings size={18} />
   },
   {

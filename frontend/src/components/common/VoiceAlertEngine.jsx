@@ -41,10 +41,7 @@ export default function VoiceAlertEngine() {
           medsToTake.push(med.name);
           
           if (!triggeredType) {
-            if (hours >= 5 && hours < 11) triggeredType = ALERT_TYPES.MED_MORNING;
-            else if (hours >= 11 && hours < 14) triggeredType = ALERT_TYPES.MED_NOON;
-            else if (hours >= 14 && hours < 18) triggeredType = ALERT_TYPES.MED_EVENING;
-            else triggeredType = ALERT_TYPES.MED_NIGHT;
+            triggeredType = ALERT_TYPES.MED_ALL;
           }
         }
       }
