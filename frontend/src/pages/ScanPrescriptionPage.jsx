@@ -6,6 +6,7 @@ import {
 import { scanService } from '../services/scan.service';
 import { medicationsService } from '../services/medications.service';
 import { scanHistoryService } from '../services/scanHistory.service';
+import { voiceAlertService } from '../services/voiceAlert.service';
 import { useMedications } from '../hooks/useMedications';
 import { useToast } from '../hooks/useToast';
 import ScanCamera from '../components/scan/ScanCamera';
@@ -91,6 +92,16 @@ export default function ScanPrescriptionPage() {
       setIsAllSaved(true);
       showToast(`Đã thêm ${result.medications.length} loại thuốc thành công!`, 'success');
       fetchMedications();
+
+      // Check if user has voice alerts configured
+      const hasVoice = await voiceAlertService.hasAnyCustomVoice();
+      if (!hasVoice) {
+        setTimeout(() => {
+          if (window.confirm("Bạn chưa thiết lập tính năng nhắc nhở bằng Giọng nói người nhà. Bạn có muốn cài đặt ngay bây giờ không?")) {
+            navigate('/settings');
+          }
+        }, 500);
+      }
     } catch {
       showToast('Có lỗi xảy ra khi lưu thuốc', 'error');
     } finally {

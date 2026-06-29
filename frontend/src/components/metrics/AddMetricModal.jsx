@@ -80,6 +80,9 @@ export default function AddMetricModal({ onClose, onSave, onSuccess, defaultType
           <option value={MEASUREMENT_TYPES.GLUCOSE_TOLERANCE}>
             {t.metrics?.types?.glucose_tolerance || METRIC_TYPES.glucose_tolerance.label}
           </option>
+          <option value={MEASUREMENT_TYPES.BLOOD_PRESSURE}>
+            {METRIC_TYPES.blood_pressure.label}
+          </option>
         </select>
       </div>
 

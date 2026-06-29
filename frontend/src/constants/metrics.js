@@ -61,6 +61,19 @@ export const METRIC_TYPES = {
     lowMax: 0.5,
     normalMax: 2.0,
     prediabetesMin: 2.0
+  },
+  blood_pressure: {
+    label: 'Huyết áp tâm thu',
+    unit: 'mmHg',
+    category: 'blood_pressure',
+    min: 40,
+    max: 250,
+    placeholder: '120',
+    lowMax: 90, // Dưới 90 là thấp
+    normalMax: 120,
+    prediabetesMin: 120,
+    prediabetesMax: 139,
+    dangerMin: 140
   }
 };
 
@@ -68,13 +81,15 @@ export const MEASUREMENT_TYPES = {
   GLUCOSE_FASTING: 'glucose_fasting',
   GLUCOSE_TOLERANCE: 'glucose_tolerance',
   HBAIC: 'hba1c',
-  C_PEPTIDE: 'c_peptide'
+  C_PEPTIDE: 'c_peptide',
+  BLOOD_PRESSURE: 'blood_pressure'
 };
 
 export const MEASUREMENT_CATEGORIES = {
   GLUCOSE: 'glucose',
   HBAIC: 'hba1c',
-  C_PEPTIDE: 'c_peptide'
+  C_PEPTIDE: 'c_peptide',
+  BLOOD_PRESSURE: 'blood_pressure'
 };
 
 // Status -> color map (single source of truth for the UI)
@@ -98,6 +113,9 @@ export function getMetricStatus(measurementType, value) {
 
   // Glucose: hạ đường huyết khi <3.9
   if (m.category === 'glucose' && value < HYPOGLYCEMIA_THRESHOLD) return 'low';
+  
+  // Blood pressure: thấp khi <90
+  if (m.category === 'blood_pressure' && value < m.lowMax) return 'low';
 
   if (value >= m.dangerMin) return 'danger';
   if (value >= m.prediabetesMin) return 'prediabetes';

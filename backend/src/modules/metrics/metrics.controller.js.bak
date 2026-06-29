@@ -67,7 +67,7 @@ async function createMetric(req, res, next) {
     // Determine category & unit based on type
     let measurement_category = 'glucose';
     let unit = 'mmol/L';
-    if (measurement_type === 'blood_pressure') { measurement_category = 'blood_pressure'; unit = 'mmHg'; } else if (measurement_type === 'hba1c') {
+    if (measurement_type === 'hba1c') {
       measurement_category = 'hba1c';
       unit = '%';
     } else if (measurement_type === 'c_peptide') {

@@ -6,6 +6,8 @@ import FilterPills from '../../components/common/FilterPills';
 import BloodGlucoseChart from '../../components/metrics/BloodGlucoseChart';
 import MetricHistoryItem from '../../components/metrics/MetricHistoryItem';
 import AddMetricModal from '../../components/metrics/AddMetricModal';
+import { voiceAlertService, ALERT_TYPES } from '../../services/voiceAlert.service';
+import { getMetricStatus } from '../../constants/metrics';
 import Button from '../../components/common/Button';
 import styles from './MetricsPage.module.css';
 
@@ -25,6 +27,24 @@ export default function MetricsPage() {
   const handleSave = async (data) => {
     await addMetric(data);
     fetchMetrics(activeType, days);
+
+    // Kiểm tra để kích hoạt voice alert
+    const status = getMetricStatus(data.measurement_type, data.value);
+    
+    if (data.measurement_type.includes('glucose')) {
+      if (status === 'danger' || status === 'prediabetes') {
+        // Warning high
+        voiceAlertService.playAlert(ALERT_TYPES.SUGAR_HIGH);
+      } else if (status === 'low') {
+        // Warning low
+        voiceAlertService.playAlert(ALERT_TYPES.SUGAR_LOW);
+      }
+    } else if (data.measurement_type === 'blood_pressure') {
+      if (status === 'low') {
+        // Low blood pressure
+        voiceAlertService.playAlert(ALERT_TYPES.BP_LOW);
+      }
+    }
   };
 
   const handleDelete = async (id) => {

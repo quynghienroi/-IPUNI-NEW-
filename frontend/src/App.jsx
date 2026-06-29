@@ -12,6 +12,7 @@ import AppointmentsPage from './pages/Appointments/AppointmentsPage';
 import AdvicePage from './pages/Advice/AdvicePage';
 import ScanPrescriptionPage from './pages/ScanPrescriptionPage';
 import ScanHistoryPage from './pages/ScanHistoryPage';
+import SettingsPage from './pages/SettingsPage';
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuthStore();
@@ -79,6 +80,13 @@ function AppRoutes() {
         <ProtectedRoute>
           <AppLayout>
             <ScanHistoryPage />
+          </AppLayout>
+        </ProtectedRoute>
+      } />
+      <Route path="/settings" element={
+        <ProtectedRoute>
+          <AppLayout>
+            <SettingsPage />
           </AppLayout>
         </ProtectedRoute>
       } />
