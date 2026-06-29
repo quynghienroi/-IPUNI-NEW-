@@ -17,8 +17,8 @@ export default function ScanPrescriptionPage() {
   const [imageUrl, setImageUrl] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState(null);
-  const [savedIndices, setSavedIndices] = useState(new Set());
-  const [savingIndex, setSavingIndex] = useState(null);
+  const [isSavingAll, setIsSavingAll] = useState(false);
+  const [isAllSaved, setIsAllSaved] = useState(false);
   const [expandedIndex, setExpandedIndex] = useState(null);
 
 
@@ -27,7 +27,7 @@ export default function ScanPrescriptionPage() {
     setImageFile(file);
     setImageUrl(URL.createObjectURL(file));
     setResult(null);
-    setSavedIndices(new Set());
+    setIsAllSaved(false);
     setExpandedIndex(null);
   }, [imageUrl]);
 
@@ -55,26 +55,32 @@ export default function ScanPrescriptionPage() {
     }
   }, [imageFile, showToast]);
 
-  const handleSaveOne = useCallback(async (med, index) => {
-    setSavingIndex(index);
+  const handleSaveAll = useCallback(async () => {
+    if (!result || !result.medications || result.medications.length === 0) return;
+    
+    setIsSavingAll(true);
     try {
-      await medicationsService.create({
-        name: med.name,
-        dosage: med.dosage || 'Theo chỉ định',
-        frequency: med.frequency || 'Theo chỉ định bác sĩ',
-        times: med.times && med.times.length > 0 ? med.times : ['07:00'],
-        instructions: med.instructions || '',
-        doctor_name: result?.doctorName || med.doctor_name || '',
-        prescribed_at: result?.prescriptionDate || new Date().toISOString().split('T')[0],
-        is_active: 1,
-      });
-      setSavedIndices(prev => new Set([...prev, index]));
-      showToast(`Đã thêm ${med.name}`, 'success');
+      const promises = result.medications.map(med => 
+        medicationsService.create({
+          name: med.name,
+          dosage: med.dosage || 'Theo chỉ định',
+          frequency: med.frequency || 'Theo chỉ định bác sĩ',
+          times: med.times && med.times.length > 0 ? med.times : ['07:00'],
+          instructions: med.instructions || '',
+          doctor_name: result.doctorName || med.doctor_name || '',
+          prescribed_at: result.prescriptionDate || new Date().toISOString().split('T')[0],
+          is_active: 1,
+        })
+      );
+      
+      await Promise.all(promises);
+      setIsAllSaved(true);
+      showToast(`Đã thêm ${result.medications.length} loại thuốc thành công!`, 'success');
       fetchMedications();
     } catch {
-      showToast('Lỗi khi lưu thuốc', 'error');
+      showToast('Có lỗi xảy ra khi lưu thuốc', 'error');
     } finally {
-      setSavingIndex(null);
+      setIsSavingAll(false);
     }
   }, [result, fetchMedications, showToast]);
 
@@ -83,7 +89,7 @@ export default function ScanPrescriptionPage() {
     setImageFile(null);
     setImageUrl(null);
     setResult(null);
-    setSavedIndices(new Set());
+    setIsAllSaved(false);
     setExpandedIndex(null);
 
   }, [imageUrl]);
@@ -193,13 +199,11 @@ export default function ScanPrescriptionPage() {
                     {result.medications.length} loại thuốc
                   </h2>
                   {result.medications.map((med, i) => {
-                    const saved = savedIndices.has(i);
-                    const saving = savingIndex === i;
                     const expanded = expandedIndex === i;
                     const detail = med.detail || {};
                     const hasDetail = detail.purpose || detail.mechanism || detail.sideEffects || detail.contraindications || (detail.interactions && detail.interactions.length > 0);
                     return (
-                      <div key={i} className={`${styles.medCard} ${saved ? styles.medCardSaved : ''}`}>
+                      <div key={i} className={styles.medCard}>
                         <div className={styles.medHeader}>
                           <span className={styles.medName}>
                             {med.name}
@@ -284,18 +288,22 @@ export default function ScanPrescriptionPage() {
                           </div>
                         )}
 
-                        <button
-                          className={saved ? styles.savedBtn : styles.addBtn}
-                          onClick={() => !saved && handleSaveOne(med, i)}
-                          disabled={saved || saving}
-                        >
-                          {saving ? 'Đang lưu...' : saved ? (
-                            <><CheckCircle size={15} /> Đã thêm</>
-                          ) : 'Thêm vào danh sách thuốc'}
-                        </button>
                       </div>
                     );
                   })}
+                  
+                  <button
+                    className={isAllSaved ? styles.savedBtn : styles.addBtn}
+                    onClick={handleSaveAll}
+                    disabled={isAllSaved || isSavingAll}
+                    style={{ marginTop: '16px', width: '100%' }}
+                  >
+                    {isSavingAll ? 'Đang lưu...' : isAllSaved ? (
+                      <><CheckCircle size={15} /> Đã lưu toàn bộ vào sổ tay</>
+                    ) : (
+                      `Thêm tất cả ${result.medications.length} thuốc vào sổ tay`
+                    )}
+                  </button>
                 </div>
               )}
 
