@@ -14,6 +14,5 @@ COPY . .
 
 EXPOSE 3001
 
-# Run migrations and start backend server
-CMD ["sh", "-c", "npm run migrate && npm start"]
-    
+# Run migrations, seeds, and start backend server
+CMD ["sh", "-c", "npm run migrate && npm run seed && npm start"]
