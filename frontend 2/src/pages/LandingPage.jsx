@@ -1,12 +1,16 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, Camera, Brain, Sparkles, ChevronRight } from 'lucide-react';
+import { Activity, Camera, Brain, Sparkles, ChevronRight, Play, BookOpen, X } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 import useAuthStore from '../store/authStore';
 import styles from './LandingPage.module.css';
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const { demoLogin } = useAuth();
   const { isAuthenticated } = useAuthStore();
+  const [showModal, setShowModal] = useState(false);
+  const [demoLoading, setDemoLoading] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -19,7 +23,7 @@ export default function LandingPage() {
       {/* Navbar */}
       <nav className={styles.nav}>
         <div className={styles.logo}>DIA+</div>
-        <button onClick={() => navigate('/login')} className={styles.loginBtn}>
+        <button onClick={() => setShowModal(true)} className={styles.loginBtn}>
           Đăng nhập
         </button>
       </nav>
@@ -37,7 +41,7 @@ export default function LandingPage() {
           <p className={styles.subtitle}>
             DIA+ giúp bạn theo dõi đường huyết, nhắc nhở uống thuốc và phân tích đơn thuốc tự động bằng AI.
           </p>
-          <button onClick={() => navigate('/login')} className={styles.ctaBtn}>
+          <button onClick={() => setShowModal(true)} className={styles.ctaBtn}>
             Bắt đầu miễn phí <ChevronRight size={20} />
           </button>
         </div>
@@ -78,6 +82,56 @@ export default function LandingPage() {
         <div className={styles.logo}>DIA+</div>
         <p>© 2026 IPUNI-NEW. All rights reserved.</p>
       </footer>
+      {showModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <button className={styles.closeModal} onClick={() => setShowModal(false)}><X size={20}/></button>
+            <h2 className={styles.modalTitle}>Bạn muốn bắt đầu như thế nào?</h2>
+            
+            <button 
+              className={styles.choiceBtn}
+              onClick={() => {
+                localStorage.setItem('diaplus_has_seen_tour', 'true');
+                navigate('/login');
+              }}
+              disabled={demoLoading}
+            >
+              <div className={styles.choiceIcon} style={{ background: '#EEF2FF', color: '#4F46E5' }}>
+                <Play size={24} />
+              </div>
+              <div className={styles.choiceText}>
+                <h3>Tự trải nghiệm</h3>
+                <p>Tôi muốn tự khám phá các tính năng của DIA+</p>
+              </div>
+            </button>
+
+            <button 
+              className={styles.choiceBtn}
+              onClick={async () => {
+                setDemoLoading(true);
+                try {
+                  localStorage.removeItem('diaplus_has_seen_tour');
+                  await demoLogin();
+                  navigate('/dashboard');
+                } catch (err) {
+                  console.error(err);
+                } finally {
+                  setDemoLoading(false);
+                }
+              }}
+              disabled={demoLoading}
+            >
+              <div className={styles.choiceIcon} style={{ background: '#FEF3C7', color: '#D97706' }}>
+                <BookOpen size={24} />
+              </div>
+              <div className={styles.choiceText}>
+                <h3>{demoLoading ? 'Đang vào...' : 'Hướng dẫn dùng app'}</h3>
+                <p>Xem hướng dẫn chi tiết từng bước cho người mới</p>
+              </div>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

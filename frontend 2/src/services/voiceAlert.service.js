@@ -110,9 +110,12 @@ export const voiceAlertService = {
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'vi-VN';
         
-        // Try to explicitly select a Vietnamese voice
+        // Try to explicitly select a Vietnamese voice (Google TTS or system default vi-VN)
         const voices = window.speechSynthesis.getVoices();
-        const viVoice = voices.find(v => v.lang.includes('vi') || v.name.toLowerCase().includes('viet'));
+        let viVoice = voices.find(v => v.name === 'Google Tiếng Việt' || v.lang === 'vi-VN' || v.lang === 'vi_VN');
+        if (!viVoice) {
+          viVoice = voices.find(v => v.lang.includes('vi') || v.name.toLowerCase().includes('viet'));
+        }
         if (viVoice) {
           utterance.voice = viVoice;
         }

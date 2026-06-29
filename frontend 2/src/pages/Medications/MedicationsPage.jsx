@@ -17,7 +17,11 @@ export default function MedicationsPage() {
       <h1 className={styles.title}>{t.medications.title}</h1>
       <p className={styles.subtitle}>{t.medications.subtitle}</p>
 
-      {loading ? null : medications.length === 0 ? (
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--color-text-secondary)', fontSize: 14 }}>
+          {t.common?.loading || 'Đang tải dữ liệu...'}
+        </div>
+      ) : (!medications || medications.length === 0) ? (
         <EmptyState
           icon={Pill}
           title={t.medications.noMeds}

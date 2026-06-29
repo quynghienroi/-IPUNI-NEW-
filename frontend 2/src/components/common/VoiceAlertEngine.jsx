@@ -11,8 +11,6 @@ export default function VoiceAlertEngine() {
   const alertedRef = useRef({});
 
   useEffect(() => {
-    fetchMedications();
-    
     // Check every 30 seconds
     const interval = setInterval(() => {
       checkMedicationTimes();

@@ -5,7 +5,8 @@
   transform: translateX(-50%);
   width: 100%;
   max-width: 430px;
-  height: var(--color-nav-height);
+  height: calc(var(--color-nav-height) + var(--safe-bottom));
+  padding-bottom: var(--safe-bottom);
   background: var(--color-surface);
   border-top: 1px solid var(--color-border);
   display: flex;
