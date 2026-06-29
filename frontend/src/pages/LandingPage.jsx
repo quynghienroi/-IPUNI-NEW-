@@ -1,18 +1,18 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Activity, Camera, Brain, Sparkles, ChevronRight } from 'lucide-react';
+import useAuthStore from '../store/authStore';
 import styles from './LandingPage.module.css';
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuthStore();
 
-  // If there's a token, redirect to dashboard
   useEffect(() => {
-    const token = localStorage.getItem('dia_plus_token');
-    if (token) {
+    if (isAuthenticated) {
       navigate('/dashboard');
     }
-  }, [navigate]);
+  }, [isAuthenticated, navigate]);
 
   return (
     <div className={styles.container}>
