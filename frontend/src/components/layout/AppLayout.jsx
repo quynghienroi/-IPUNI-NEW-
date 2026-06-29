@@ -15,9 +15,9 @@ export default function AppLayout({ children }) {
   return (
     <div className={styles.layout}>
       <TopBar />
-      <div className={styles.main}>
+      <main className="page-content">
         {children}
-      </div>
+      </main>
       <BottomNav />
       <VoiceAlertEngine />
       <OnboardingTour />
