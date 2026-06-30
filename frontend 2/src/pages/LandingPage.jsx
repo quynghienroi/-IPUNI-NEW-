@@ -91,7 +91,7 @@ export default function LandingPage() {
             <button 
               className={styles.choiceBtn}
               onClick={() => {
-                localStorage.setItem('dia_tour_completed', 'true');
+                localStorage.setItem('diaplus_has_seen_tour', 'true');
                 navigate('/login');
               }}
               disabled={demoLoading}
@@ -110,7 +110,7 @@ export default function LandingPage() {
               onClick={async () => {
                 setDemoLoading(true);
                 try {
-                  localStorage.removeItem('dia_tour_completed');
+                  localStorage.setItem('diaplus_force_tour', 'true');
                   await demoLogin();
                   navigate('/dashboard');
                 } catch (err) {

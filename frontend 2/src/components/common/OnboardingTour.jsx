@@ -7,6 +7,14 @@ export default function OnboardingTour() {
   const [runTour, setRunTour] = useState(false);
 
   useEffect(() => {
+    const forceTour = localStorage.getItem('diaplus_force_tour');
+    if (forceTour) {
+      setRunTour(true);
+      localStorage.removeItem('diaplus_force_tour');
+      localStorage.setItem('diaplus_has_seen_tour', 'true');
+      return;
+    }
+
     const hasSeenTour = localStorage.getItem('diaplus_has_seen_tour');
     if (!hasSeenTour) {
       // Small delay to allow the app to render fully first
