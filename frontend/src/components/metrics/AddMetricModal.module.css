@@ -38,7 +38,7 @@
 
 .dateRow {
   display: grid;
-  grid-template-columns: 1.3fr 1fr 0.7fr;
+  grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
 
@@ -51,3 +51,14 @@
 }
 
 .textarea { resize: none; height: 72px; font-size: 14px; }
+
+.bloodPressureRow {
+  display: flex;
+  flex-direction: column;
+}
+
+.bpDivider {
+  font-size: 18px;
+  color: var(--color-text-tertiary);
+  font-weight: 300;
+}

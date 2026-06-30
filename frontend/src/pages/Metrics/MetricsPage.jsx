@@ -6,6 +6,7 @@ import FilterPills from '../../components/common/FilterPills';
 import BloodGlucoseChart from '../../components/metrics/BloodGlucoseChart';
 import MetricHistoryItem from '../../components/metrics/MetricHistoryItem';
 import AddMetricModal from '../../components/metrics/AddMetricModal';
+import StatisticsCard from '../../components/metrics/StatisticsCard';
 import { voiceAlertService, ALERT_TYPES } from '../../services/voiceAlert.service';
 import { getMetricStatus } from '../../constants/metrics';
 import Button from '../../components/common/Button';
@@ -15,14 +16,15 @@ export default function MetricsPage() {
   const [activeType, setActiveType] = useState('glucose_fasting');
   const [days, setDays] = useState(7);
   const [showModal, setShowModal] = useState(false);
-  const { metrics, loading, fetchMetrics, addMetric, removeMetric } = useMetrics();
+  const { metrics, statistics, loading, fetchMetrics, fetchStatistics, addMetric, removeMetric } = useMetrics();
   const t = useT();
 
   const TYPE_OPTIONS = Object.entries(t.metrics.types).map(([k, v]) => ({ value: k, label: v }));
 
   useEffect(() => {
     fetchMetrics(activeType, days);
-  }, [activeType, days]);
+    fetchStatistics(activeType, 90); // Always fetch 90 days for statistics
+  }, [activeType, days, fetchMetrics, fetchStatistics]);
 
   const handleSave = async (data) => {
     await addMetric(data);
@@ -32,12 +34,10 @@ export default function MetricsPage() {
     const status = getMetricStatus(data.measurement_type, data.value);
     
     if (data.measurement_type.includes('glucose')) {
-      if (status === 'danger' || status === 'prediabetes') {
-        // Warning high
-        voiceAlertService.playAlert(ALERT_TYPES.SUGAR_HIGH);
-      } else if (status === 'low') {
-        // Warning low
-        voiceAlertService.playAlert(ALERT_TYPES.SUGAR_LOW);
+      if (status === 'danger' || status === 'low') {
+        voiceAlertService.playAlert(
+          status === 'danger' ? ALERT_TYPES.SUGAR_HIGH : ALERT_TYPES.SUGAR_LOW
+        );
       }
     } else if (data.measurement_type === 'blood_pressure') {
       if (status === 'low') {
@@ -59,7 +59,7 @@ export default function MetricsPage() {
           <h1 className={styles.title}>{t.metrics.title}</h1>
           <p className={styles.subtitle}>{t.metrics.subtitle}</p>
         </div>
-        <Button onClick={() => setShowModal(true)} style={{ borderRadius: 20, padding: '8px 14px', fontSize: 13 }}>
+        <Button onClick={() => setShowModal(true)} className={styles.addBtn}>
           <Plus size={14} /> {t.metrics.addBtn}
         </Button>
       </div>
@@ -70,6 +70,15 @@ export default function MetricsPage() {
 
       <div className={styles.chartSection}>
         <BloodGlucoseChart data={metrics} type={activeType} days={days} onDaysChange={setDays} />
+      </div>
+      
+      <div className={styles.statsSection}>
+        <StatisticsCard 
+          statistics={statistics?.statistics} 
+          estimatedHbA1c={statistics?.estimatedHbA1c} 
+          period={statistics?.period || '90 days'} 
+          type={activeType} 
+        />
       </div>
 
       <div className={styles.historySection}>

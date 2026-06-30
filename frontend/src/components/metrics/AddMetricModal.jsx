@@ -10,19 +10,18 @@ function nowLocalParts() {
   const pad = (n) => String(n).padStart(2, '0');
   return {
     date: `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`,
-    time: `${pad(now.getHours())}:${pad(now.getMinutes())}`,
-    seconds: pad(now.getSeconds())
+    time: `${pad(now.getHours())}:${pad(now.getMinutes())}`
   };
 }
 
 export default function AddMetricModal({ onClose, onSave, onSuccess, defaultType }) {
-  const { date, time, seconds } = nowLocalParts();
+  const { date, time } = nowLocalParts();
   const t = useT();
   const [measurementType, setMeasurementType] = useState(defaultType || MEASUREMENT_TYPES.GLUCOSE_FASTING);
   const [value, setValue] = useState('');
+  const [valueDiastolic, setValueDiastolic] = useState('');
   const [measuredDate, setMeasuredDate] = useState(date);
   const [measuredTime, setMeasuredTime] = useState(time);
-  const [measuredSeconds, setMeasuredSeconds] = useState(seconds);
   const [note, setNote] = useState('');
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
@@ -32,24 +31,37 @@ export default function AddMetricModal({ onClose, onSave, onSuccess, defaultType
 
   const handleSave = async () => {
     const num = parseFloat(value);
+    const numDia = parseFloat(valueDiastolic);
 
     if (!value || isNaN(num) || num < minValue || num > maxValue) {
       setError(`${meta.label}: ${minValue} – ${maxValue} ${unit}`);
       return;
     }
 
+    if (measurementType === MEASUREMENT_TYPES.BLOOD_PRESSURE) {
+      if (!valueDiastolic || isNaN(numDia) || numDia < 30 || numDia > 150) {
+        setError(`Tâm trương: 30 – 150 ${unit}`);
+        return;
+      }
+    }
+
     setError('');
     setSaving(true);
 
     try {
-      const ss = (measuredSeconds || '00').padStart(2, '0');
-      const measured_at = new Date(`${measuredDate}T${measuredTime}:${ss}`).toISOString();
-      await onSave({
+      const measured_at = new Date(`${measuredDate}T${measuredTime}:00`).toISOString();
+      const payload = {
         measurement_type: measurementType,
         value: num,
         measured_at,
         note: note.trim() || undefined
-      });
+      };
+      
+      if (measurementType === MEASUREMENT_TYPES.BLOOD_PRESSURE) {
+        payload.value_diastolic = numDia;
+      }
+
+      await onSave(payload);
       onSuccess?.();
       onClose();
     } catch (e) {
@@ -71,6 +83,9 @@ export default function AddMetricModal({ onClose, onSave, onSuccess, defaultType
           <option value={MEASUREMENT_TYPES.GLUCOSE_FASTING}>
             {t.metrics?.types?.glucose_fasting || METRIC_TYPES.glucose_fasting.label}
           </option>
+          <option value={MEASUREMENT_TYPES.GLUCOSE_POSTMEAL}>
+            {t.metrics?.types?.glucose_postmeal || METRIC_TYPES.glucose_postmeal.label}
+          </option>
           <option value={MEASUREMENT_TYPES.HBAIC}>
             {t.metrics?.types?.hba1c || METRIC_TYPES.hba1c.label}
           </option>
@@ -81,26 +96,55 @@ export default function AddMetricModal({ onClose, onSave, onSuccess, defaultType
             {t.metrics?.types?.glucose_tolerance || METRIC_TYPES.glucose_tolerance.label}
           </option>
           <option value={MEASUREMENT_TYPES.BLOOD_PRESSURE}>
-            {METRIC_TYPES.blood_pressure.label}
+            {t.metrics?.types?.blood_pressure || METRIC_TYPES.blood_pressure.label}
           </option>
         </select>
       </div>
 
       <div className={styles.group}>
         <label className={styles.label}>{t.addMetric?.valueLabel || 'Value'} ({unit})</label>
-        <div className={styles.valueRow}>
-          <input
-            className={styles.input}
-            type="number"
-            step="0.1"
-            min={minValue}
-            max={maxValue}
-            placeholder={placeholder}
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-          />
-          <span className={styles.unit}>{unit}</span>
-        </div>
+        {measurementType === MEASUREMENT_TYPES.BLOOD_PRESSURE ? (
+          <div className={styles.bloodPressureRow}>
+            <div className={styles.valueRow}>
+              <input
+                className={styles.input}
+                type="number"
+                step="1"
+                min={minValue}
+                max={maxValue}
+                placeholder="Tâm thu (120)"
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+              />
+              <span className={styles.bpDivider}>/</span>
+              <input
+                className={styles.input}
+                type="number"
+                step="1"
+                min={30}
+                max={150}
+                placeholder="Tâm trương (80)"
+                value={valueDiastolic}
+                onChange={(e) => setValueDiastolic(e.target.value)}
+              />
+              <span className={styles.unit}>{unit}</span>
+            </div>
+          </div>
+        ) : (
+          <div className={styles.valueRow}>
+            <input
+              className={styles.input}
+              type="number"
+              step="0.1"
+              min={minValue}
+              max={maxValue}
+              placeholder={placeholder}
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+            />
+            <span className={styles.unit}>{unit}</span>
+          </div>
+        )}
         {error && <div className={styles.error}>{error}</div>}
       </div>
 
@@ -118,19 +162,6 @@ export default function AddMetricModal({ onClose, onSave, onSuccess, defaultType
             type="time"
             value={measuredTime}
             onChange={(e) => setMeasuredTime(e.target.value)}
-          />
-          <input
-            className={styles.input}
-            type="text"
-            inputMode="numeric"
-            maxLength={2}
-            placeholder="giây"
-            value={measuredSeconds}
-            onChange={(e) => {
-              let v = e.target.value.replace(/\D/g, '').slice(0, 2);
-              if (v !== '' && parseInt(v) > 59) v = '59';
-              setMeasuredSeconds(v);
-            }}
           />
         </div>
       </div>

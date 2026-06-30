@@ -12,6 +12,10 @@ export default function VoiceAlertEngine() {
 
   useEffect(() => {
     fetchMedications();
+    // Request notification permission for local background alerts
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
   }, [fetchMedications]);
 
   useEffect(() => {
@@ -46,6 +50,20 @@ export default function VoiceAlertEngine() {
         
         const msg = `Đã đến giờ uống thuốc: ${medsToTake.join(', ')}`;
         showToast(msg, 'success'); 
+        
+        // Show Local Notification (works on desktop and PWA on mobile)
+        if ('Notification' in window && Notification.permission === 'granted') {
+          try {
+            new Notification('Nhắc nhở uống thuốc (Diaplus)', {
+              body: msg,
+              icon: '/logo192.png',
+              badge: '/logo192.png',
+              vibrate: [200, 100, 200, 100, 200]
+            });
+          } catch (e) {
+            console.error('Local Notification failed', e);
+          }
+        }
       }
     };
 

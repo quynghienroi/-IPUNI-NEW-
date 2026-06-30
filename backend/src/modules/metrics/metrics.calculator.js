@@ -3,11 +3,12 @@ const { THRESHOLDS, HYPOGLYCEMIA_THRESHOLD, PATIENT_TARGETS } = require('../../c
 class MetricsCalculator {
   /**
    * Calculate status based on measurement type and value
-   * @param {string} measurementType - glucose_fasting, glucose_postmeal, glucose_random, hba1c
+   * @param {string} measurementType - glucose_fasting, glucose_postmeal, glucose_random, hba1c, blood_pressure
    * @param {number} value - The metric value
+   * @param {number} valueDiastolic - The diastolic value (for blood pressure)
    * @returns {string} - 'low' | 'normal' | 'warning' | 'danger' | 'prediabetes'
    */
-  static calculateStatus(measurementType, value) {
+  static calculateStatus(measurementType, value, valueDiastolic) {
     const thresholds = THRESHOLDS[measurementType];
     if (!thresholds) return null;
 
@@ -30,6 +31,14 @@ class MetricsCalculator {
     if (measurementType === 'hba1c') {
       if (value >= thresholds.dangerMin) return 'danger';
       if (value >= thresholds.prediabetesMin) return 'prediabetes';
+      return 'normal';
+    }
+
+    // Blood pressure
+    if (measurementType === 'blood_pressure') {
+      if (value >= thresholds.dangerMin || (valueDiastolic && valueDiastolic >= 90)) return 'danger';
+      if (value >= thresholds.prediabetesMin || (valueDiastolic && valueDiastolic >= 80)) return 'prediabetes';
+      if (value < thresholds.lowMax || (valueDiastolic && valueDiastolic < 60)) return 'low';
       return 'normal';
     }
 
@@ -108,10 +117,11 @@ class MetricsCalculator {
    * @param {string} measurementType - Type of measurement
    * @param {number} value - The value
    * @param {string} patientType - type2_diabetes or type1_diabetes
+   * @param {number} valueDiastolic - Diastolic value
    * @returns {Object} - Status and target info
    */
-  static categorizeReading(measurementType, value, patientType = 'type2_diabetes') {
-    const status = this.calculateStatus(measurementType, value);
+  static categorizeReading(measurementType, value, patientType = 'type2_diabetes', valueDiastolic) {
+    const status = this.calculateStatus(measurementType, value, valueDiastolic);
     const target = PATIENT_TARGETS[patientType];
 
     if (!target) return { status };

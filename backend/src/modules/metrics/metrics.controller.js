@@ -62,7 +62,7 @@ async function getStatistics(req, res, next) {
 
 async function createMetric(req, res, next) {
   try {
-    const { measurement_type, value, measured_at, note } = req.validatedBody;
+    const { measurement_type, value, value_diastolic, measured_at, note } = req.validatedBody;
 
     // Determine category & unit based on type
     let measurement_category = 'glucose';
@@ -76,31 +76,20 @@ async function createMetric(req, res, next) {
     }
 
     // Calculate status
-    const status = MetricsCalculator.calculateStatus(measurement_type, value);
+    const status = MetricsCalculator.calculateStatus(measurement_type, value, value_diastolic);
 
-    // For glucose readings, calculate estimated HbA1c from 90-day average
-    let estimated_hba1c = null;
-    if (measurement_category === 'glucose') {
-      const glucose90d = await metricsService.getMetrics(
-        req.user.id,
-        null,
-        'glucose',
-        90
-      );
-      if (glucose90d.length > 0) {
-        const stats = MetricsCalculator.getStatistics(glucose90d);
-        estimated_hba1c = MetricsCalculator.estimateHbA1c(stats.average);
-      }
-    }
+    // Note: User feedback requested NOT to load 90 days data on every save to optimize performance.
+    // HbA1c estimation will only be done in the /statistics endpoint.
 
     const metric = await metricsService.createMetric(req.user.id, {
       measurement_type,
       measurement_category,
       value,
+      value_diastolic,
       unit,
       measured_at,
       status,
-      estimated_hba1c,
+      estimated_hba1c: null,
       note
     });
 

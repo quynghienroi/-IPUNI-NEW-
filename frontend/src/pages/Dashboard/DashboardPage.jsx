@@ -100,9 +100,8 @@ export default function DashboardPage() {
 
           <div className={styles.metricsGrid}>
             <MetricCard type="glucose_fasting" metric={latestMetrics?.glucose_fasting} />
-            <MetricCard type="hba1c" metric={latestMetrics?.hba1c} />
-            <MetricCard type="c_peptide" metric={latestMetrics?.c_peptide} />
-            <MetricCard type="glucose_tolerance" metric={latestMetrics?.glucose_tolerance} />
+            <MetricCard type="glucose_postmeal" metric={latestMetrics?.glucose_postmeal} />
+            <MetricCard type="blood_pressure" metric={latestMetrics?.blood_pressure} />
             <AddMetricCard onClick={() => setShowModal(true)} />
           </div>
         </div>

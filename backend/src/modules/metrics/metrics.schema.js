@@ -12,6 +12,7 @@ const measurementTypeSchema = z.string()
 const createMetricSchema = z.object({
   measurement_type: measurementTypeSchema,
   value: z.number().positive('Value must be positive'),
+  value_diastolic: z.number().positive('Diastolic must be positive').optional().nullable(),
   measured_at: z.string()
     .datetime({ offset: true })
     .or(z.string().min(1, 'Invalid datetime')),
@@ -30,6 +31,12 @@ const createMetricSchema = z.object({
     // C-peptide: 0-20 ng/mL
     if (data.measurement_type === 'c_peptide') {
       return data.value >= 0 && data.value <= 20;
+    }
+    // Blood pressure: systolic 40-250, diastolic 30-150
+    if (data.measurement_type === 'blood_pressure') {
+      const validSystolic = data.value >= 40 && data.value <= 250;
+      const validDiastolic = data.value_diastolic != null ? (data.value_diastolic >= 30 && data.value_diastolic <= 150) : true;
+      return validSystolic && validDiastolic;
     }
     return false;
   },

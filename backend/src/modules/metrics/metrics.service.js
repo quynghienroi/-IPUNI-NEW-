@@ -22,7 +22,7 @@ async function getMetrics(userId, measurementType, measurementCategory, days = 7
 }
 
 async function getLatestByType(userId) {
-  const types = ['glucose_fasting', 'glucose_tolerance', 'hba1c', 'c_peptide'];
+  const types = ['glucose_fasting', 'glucose_postmeal', 'hba1c', 'c_peptide', 'blood_pressure'];
   const results = {};
 
   for (const type of types) {

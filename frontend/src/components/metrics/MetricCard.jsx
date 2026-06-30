@@ -17,7 +17,11 @@ export function MetricCard({ type, metric }) {
       </div>
       <div className={styles.cardValueRow}>
         <span className={`${styles.cardValue} ${status ? styles[status] : ''}`}>
-          {metric ? `${metric.value}` : '—'}
+          {metric 
+            ? (type === 'blood_pressure' && metric.value_diastolic != null 
+                ? `${metric.value}/${metric.value_diastolic}` 
+                : `${metric.value}`)
+            : '—'}
         </span>
         {status === 'danger' && <AlertTriangle size={16} color="#EF4444" />}
       </div>

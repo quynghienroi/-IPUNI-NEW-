@@ -21,7 +21,22 @@ export const METRIC_TYPES = {
     normalMax: 5.5,
     prediabetesMin: 5.6,
     prediabetesMax: 6.9,
+    prediabetesMax: 6.9,
     dangerMin: 7.0
+  },
+  glucose_postmeal: {
+    label: 'Glucose (Sau ăn 2h)',
+    unit: 'mmol/L',
+    category: 'glucose',
+    min: 0.1,
+    max: 50,
+    placeholder: '7.8',
+    // <3.9 low | 3.9–7.7 normal | 7.8–11.0 prediabetes | ≥11.1 danger
+    lowMax: 3.9,
+    normalMax: 7.7,
+    prediabetesMin: 7.8,
+    prediabetesMax: 11.0,
+    dangerMin: 11.1
   },
   glucose_tolerance: {
     label: 'Dung nạp Glucose (OGTT 2h)',
@@ -79,6 +94,7 @@ export const METRIC_TYPES = {
 
 export const MEASUREMENT_TYPES = {
   GLUCOSE_FASTING: 'glucose_fasting',
+  GLUCOSE_POSTMEAL: 'glucose_postmeal',
   GLUCOSE_TOLERANCE: 'glucose_tolerance',
   HBAIC: 'hba1c',
   C_PEPTIDE: 'c_peptide',

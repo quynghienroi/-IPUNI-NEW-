@@ -1,50 +1,55 @@
+import { Activity, Droplet } from 'lucide-react';
 import { useT } from '../../hooks/useT';
 import styles from './StatisticsCard.module.css';
 
-export default function StatisticsCard({ statistics, estimatedHbA1c }) {
+export default function StatisticsCard({ statistics, estimatedHbA1c, period, type }) {
   const t = useT();
 
-  if (!statistics) {
-    return (
-      <div className={styles.card}>
-        <p className={styles.empty}>{t.metrics?.noData || 'No data'}</p>
-      </div>
-    );
+  if (!statistics || statistics.count === 0) {
+    return null;
   }
+
+  // Tiêu đề dựa trên loại chỉ số
+  const getTitle = () => {
+    if (type === 'blood_pressure') return 'Thống kê Huyết áp';
+    if (type === 'glucose_fasting') return 'Thống kê Glucose (Đói)';
+    if (type === 'glucose_postmeal') return 'Thống kê Glucose (Sau ăn)';
+    return 'Thống kê Chỉ số';
+  };
 
   return (
     <div className={styles.card}>
-      <div className={styles.title}>{t.metrics?.statisticsTitle || 'Statistics'}</div>
+      <div className={styles.header}>
+        <h3 className={styles.title}>{getTitle()} ({period})</h3>
+        <Activity size={16} className={styles.icon} />
+      </div>
 
       <div className={styles.grid}>
-        <div className={styles.stat}>
-          <span className={styles.label}>{t.metrics?.average || 'Average'}</span>
+        <div className={styles.statItem}>
+          <span className={styles.label}>Trung bình</span>
           <span className={styles.value}>{statistics.average}</span>
         </div>
-
-        <div className={styles.stat}>
-          <span className={styles.label}>{t.metrics?.minimum || 'Min'}</span>
-          <span className={styles.value}>{statistics.minimum}</span>
+        <div className={styles.statItem}>
+          <span className={styles.label}>Biến thiên (SD)</span>
+          <span className={styles.value}>{statistics.stdDev}</span>
         </div>
-
-        <div className={styles.stat}>
-          <span className={styles.label}>{t.metrics?.maximum || 'Max'}</span>
+        <div className={styles.statItem}>
+          <span className={styles.label}>Cao nhất</span>
           <span className={styles.value}>{statistics.maximum}</span>
         </div>
-
-        <div className={styles.stat}>
-          <span className={styles.label}>{t.metrics?.readingCount || 'Count'}</span>
-          <span className={styles.value}>{statistics.count}</span>
+        <div className={styles.statItem}>
+          <span className={styles.label}>Thấp nhất</span>
+          <span className={styles.value}>{statistics.minimum}</span>
         </div>
       </div>
 
-      {estimatedHbA1c && (
-        <div className={styles.estimated}>
-          <span className={styles.label}>{t.metrics?.estimatedHbA1c || 'Est. HbA1c'}</span>
-          <span className={styles.hba1c}>{estimatedHbA1c}%</span>
-          <span className={styles.note}>
-            {t.metrics?.estimatedNote || '(±15-20% accuracy)'}
-          </span>
+      {estimatedHbA1c != null && type.includes('glucose') && (
+        <div className={styles.hba1cRow}>
+          <div className={styles.hba1cIcon}><Droplet size={14} color="#EF4444" /></div>
+          <div className={styles.hba1cText}>
+            <span className={styles.hba1cLabel}>HbA1c ước lượng (90 ngày):</span>
+            <span className={styles.hba1cValue}>{estimatedHbA1c}%</span>
+          </div>
         </div>
       )}
     </div>
