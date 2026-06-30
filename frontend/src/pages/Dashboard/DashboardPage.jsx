@@ -82,7 +82,7 @@ export default function DashboardPage() {
         </div>
 
         {/* ── Metrics section ── */}
-        <div className={styles.section}>
+        <div className={`${styles.section} tour-step-2`}>
           <div className={styles.sectionHeader}>
             <span className={styles.sectionTitle}>
               {isCuteMode ? t.dashboard.metricsSectionCute : t.dashboard.metricsSection}
@@ -107,7 +107,7 @@ export default function DashboardPage() {
         </div>
 
         {/* ── Medication section ── */}
-        <div className={styles.section}>
+        <div className={`${styles.section} tour-step-3`}>
           <div className={isCuteMode ? styles.medicationCardCute : styles.medicationCard}>
             {isCuteMode ? (
               <div className={styles.cuteMedHeader}>

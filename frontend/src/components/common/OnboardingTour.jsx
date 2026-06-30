@@ -1,26 +1,28 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Joyride, STATUS } from 'react-joyride';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Modal from './Modal';
 import useAuthStore from '../../store/authStore';
 
 export default function OnboardingTour() {
   const [showChoice, setShowChoice] = useState(false);
   const [runTour, setRunTour] = useState(false);
+  const [stepIndex, setStepIndex] = useState(0);
   const user = useAuthStore(state => state.user);
+  const navigate = useNavigate();
+  const location = useLocation();
   
   useEffect(() => {
-    // Wait for user to be loaded from API
     if (user === null) return;
 
     const isDemoUser = user.is_demo || (user.email && user.email.startsWith('demo_'));
     const forceTour = localStorage.getItem('diaplus_force_tour');
     const hasSeenTour = localStorage.getItem('diaplus_has_seen_tour');
     
-    // Check if we need to force the tour (user chose it on landing page or first time demo)
     if (forceTour || (isDemoUser && !hasSeenTour)) {
-      // Don't set storage until we ACTUALLY run it, to survive Strict Mode unmounts
       const timer = setTimeout(() => {
         setRunTour(true);
+        setStepIndex(0);
         localStorage.removeItem('diaplus_force_tour');
         localStorage.setItem('diaplus_has_seen_tour', 'true');
       }, 500);
@@ -28,7 +30,6 @@ export default function OnboardingTour() {
       return () => clearTimeout(timer);
     }
 
-    // For normal users who haven't seen the tour, show choice
     if (!isDemoUser && !hasSeenTour) {
       const timer = setTimeout(() => {
         setShowChoice(true);
@@ -42,45 +43,170 @@ export default function OnboardingTour() {
     localStorage.setItem('diaplus_has_seen_tour', 'true');
     if (wantTour) {
       setRunTour(true);
-    }
-  };
-
-  const handleJoyrideCallback = (data) => {
-    const { status } = data;
-    const finishedStatuses = [STATUS.FINISHED, STATUS.SKIPPED];
-    
-    if (finishedStatuses.includes(status)) {
-      setRunTour(false);
+      setStepIndex(0);
     }
   };
 
   const steps = [
     {
-      target: 'body',
-      content: 'Chào mừng bạn đến với DIA+! Cùng tìm hiểu các tính năng chính nhé.',
-      placement: 'center',
+      route: '/',
+      target: '.tour-step-1',
+      placement: 'bottom',
+      content: (
+        <div style={{ textAlign: 'left', lineHeight: '1.6' }}>
+          <p style={{ fontWeight: 'bold', marginBottom: '8px' }}>Ở đây có ba tính năng hỗ trợ:</p>
+          <ul style={{ paddingLeft: '20px', margin: 0 }}>
+            <li><strong>Biểu tượng sách:</strong> Xem lời khuyên sức khỏe từ chuyên gia</li>
+            <li><strong>Biểu tượng loa chuông:</strong> Nhận thông báo nhắc nhở uống thuốc hoặc tiêm insulin đúng giờ</li>
+          </ul>
+        </div>
+      ),
     },
     {
-      target: '[href="/dashboard"]',
-      content: 'Đây là trang chủ, nơi tổng hợp tình hình sức khỏe và các nhắc nhở hôm nay.',
+      route: '/',
+      target: '.tour-step-2',
+      placement: 'top',
+      content: (
+        <div style={{ textAlign: 'left', lineHeight: '1.6' }}>
+          <p style={{ fontWeight: 'bold', marginBottom: '8px' }}>Đây là vùng theo dõi chỉ số sức khỏe. Nơi này hiển thị những lần đo gần nhất mà bạn đã lưu lại:</p>
+          <ul style={{ paddingLeft: '20px', margin: 0 }}>
+            <li><strong>Glucose (Đói):</strong> Đo lúc sáng trước khi ăn</li>
+            <li><strong>Glucose (Sau ăn 2h):</strong> Đo 2 giờ sau khi ăn</li>
+            <li><strong>Huyết áp:</strong> Chỉ số huyết áp hiện tại</li>
+          </ul>
+          <p style={{ marginTop: '8px', fontStyle: 'italic' }}>Nhấn 'Xem tất cả &gt;' để xem lịch sử đầy đủ.</p>
+        </div>
+      ),
     },
     {
-      target: '[href="/scan"]',
-      content: 'Bấm vào đây để quét ảnh đơn thuốc, AI sẽ tự động đọc tên thuốc và cách dùng!',
+      route: '/',
+      target: '.tour-step-3',
+      placement: 'top',
+      content: (
+        <div style={{ textAlign: 'left', lineHeight: '1.6' }}>
+          <p style={{ fontWeight: 'bold', marginBottom: '8px' }}>Phần 'Thuốc hôm nay' giúp bạn:</p>
+          <ul style={{ paddingLeft: '20px', margin: 0 }}>
+            <li>Xem danh sách thuốc cần uống trong ngày với giờ uống cụ thể</li>
+            <li>Đánh dấu <strong>'Đã uống'</strong> hoặc <strong>'Chưa uống'</strong> để theo dõi liệu bạn có uống đúng giờ hay không</li>
+            <li>Xem hướng dẫn từ bác sĩ (Uống sau bữa ăn chính, Dùng với nước ấm, v.v.)</li>
+            <li>Bác sĩ kê đơn sẽ hiển thị ở đây</li>
+          </ul>
+        </div>
+      ),
     },
     {
-      target: '[href="/medications"]',
-      content: 'Quản lý lịch uống thuốc và theo dõi xem bạn đã uống đúng giờ hay chưa.',
+      route: '/metrics',
+      target: '.tour-step-4',
+      placement: 'bottom',
+      content: (
+        <div style={{ textAlign: 'left', lineHeight: '1.6' }}>
+          <p style={{ fontWeight: 'bold', marginBottom: '8px' }}>Tính năng 'Chỉ số' cho phép bạn:</p>
+          <ul style={{ paddingLeft: '20px', margin: 0 }}>
+            <li><strong>Nhập chỉ số:</strong> Ghi lại các giá trị glucose, đái tháo đường mỗi khi bạn đo</li>
+            <li><strong>Theo dõi biểu đồ:</strong> Xem xu hướng chỉ số qua thời gian (vùng tiền đái, vùng đái tháo đường)</li>
+            <li><strong>Chuyển tab:</strong> Chọn loại chỉ số muốn xem (Glucose đói, Glucose sau ăn, Dung nạp Glucose)</li>
+          </ul>
+        </div>
+      ),
     },
     {
-      target: '[href="/metrics"]',
-      content: 'Theo dõi đường huyết và huyết áp của bạn qua biểu đồ trực quan.',
+      route: '/scan',
+      target: '.tour-step-5',
+      placement: 'bottom',
+      content: (
+        <div style={{ textAlign: 'left', lineHeight: '1.6' }}>
+          <p style={{ fontWeight: 'bold', marginBottom: '8px' }}>Tính năng 'Chụp ảnh AI' giúp bạn:</p>
+          <ul style={{ paddingLeft: '20px', margin: 0 }}>
+            <li>Chụp hoặc tải ảnh liên quan đến đái tháo đường (kết quả xét nghiệm, thực phẩm, v.v.)</li>
+            <li>AI sẽ phân tích ảnh của bạn tự động</li>
+            <li><strong>Lưu ý:</strong> Ứng dụng chỉ nhận diện ảnh liên quan đến đái tháo đường - không xử lý các loại bệnh khác</li>
+            <li><strong>Nút 'Lịch sử':</strong> Xem lại tất cả hình ảnh đã chụp trước đó</li>
+          </ul>
+        </div>
+      ),
     },
     {
-      target: '.user-menu-btn',
-      content: 'Vào cài đặt để ghi âm nhắc nhở bằng giọng nói người thân và đổi màu giao diện nhé!',
+      route: '/medications',
+      target: '.tour-step-6',
+      placement: 'top',
+      content: (
+        <div style={{ textAlign: 'left', lineHeight: '1.6' }}>
+          <p style={{ fontWeight: 'bold', marginBottom: '8px' }}>Tab 'Thuốc' hiển thị toàn bộ danh sách thuốc bạn đang sử dụng:</p>
+          <ul style={{ paddingLeft: '20px', margin: 0 }}>
+            <li>Tên thuốc, liều lượng, tần suất uống</li>
+            <li>Hướng dẫn sử dụng từ bác sĩ</li>
+            <li>Trạng thái uống (đã uống/chưa uống)</li>
+            <li>Bác sĩ kê đơn tên gì</li>
+          </ul>
+        </div>
+      ),
+    },
+    {
+      route: '/appointments',
+      target: '.tour-step-7',
+      placement: 'top',
+      content: (
+        <div style={{ textAlign: 'left', lineHeight: '1.6' }}>
+          <p style={{ fontWeight: 'bold', marginBottom: '8px' }}>Tab 'Bác sĩ' giúp bạn:</p>
+          <ul style={{ paddingLeft: '20px', margin: 0 }}>
+            <li><strong>Xem lịch tái khám:</strong> Ngày giờ tái khám tiếp theo</li>
+            <li><strong>Tên bác sĩ:</strong> Ai sẽ khám bạn (lấy từ đơn thuốc)</li>
+            <li><strong>Chuẩn bị tài liệu:</strong> Không lộ thông tin cá nhân, để sẵn sàng cho lần tái khám</li>
+          </ul>
+        </div>
+      ),
+    },
+    {
+      route: '/settings',
+      target: '.tour-step-8',
+      placement: 'top',
+      content: (
+        <div style={{ textAlign: 'left', lineHeight: '1.6' }}>
+          <p style={{ fontWeight: 'bold', marginBottom: '8px' }}>Trong Cài đặt giọng nói, bạn có thể:</p>
+          <ul style={{ paddingLeft: '20px', margin: 0 }}>
+            <li><strong>Ghi âm giọng nói:</strong> Nhấn nút microphone để thu âm giọng nói người thân.</li>
+            <li><strong>Phát lại nhắc nhở:</strong> Khi đến giờ uống thuốc, nghe lời nhắc bằng giọng nói thật.</li>
+            <li><strong>Cá nhân hóa:</strong> Thay vì giọng máy, bạn sẽ nghe giọng nói người thân mình nhắc nhở uống thuốc!</li>
+            <li><strong>Cảnh báo khẩn cấp:</strong> Cài đặt cảnh báo khi chỉ số tăng/giảm nguy hiểm.</li>
+          </ul>
+        </div>
+      ),
     }
   ];
+
+  const handleJoyrideCallback = (data) => {
+    const { action, index, status, type } = data;
+    const finishedStatuses = [STATUS.FINISHED, STATUS.SKIPPED];
+    
+    if (finishedStatuses.includes(status)) {
+      setRunTour(false);
+      setStepIndex(0);
+      navigate('/');
+      return;
+    }
+
+    // Step logic: When a step finishes (next/prev clicked)
+    if (type === 'step:after') {
+      const nextStepIndex = index + (action === 'prev' ? -1 : 1);
+      
+      const nextStep = steps[nextStepIndex];
+      if (nextStep) {
+        if (nextStep.route && location.pathname !== nextStep.route) {
+          // Pause tour temporarily to wait for navigation
+          setRunTour(false); 
+          navigate(nextStep.route);
+          
+          // Wait for DOM to render the new page
+          setTimeout(() => {
+            setStepIndex(nextStepIndex);
+            setRunTour(true);
+          }, 300);
+        } else {
+          setStepIndex(nextStepIndex);
+        }
+      }
+    }
+  };
 
   return (
     <>
@@ -110,15 +236,22 @@ export default function OnboardingTour() {
 
       <Joyride
         steps={steps}
+        stepIndex={stepIndex}
         run={runTour}
         continuous
         showSkipButton
         showProgress
+        disableOverlayClose
+        disableScrolling={false}
         callback={handleJoyrideCallback}
         styles={{
           options: {
             primaryColor: '#1B5FA6',
             zIndex: 10000,
+            width: 400,
+          },
+          tooltipContainer: {
+            textAlign: 'left'
           }
         }}
         locale={{

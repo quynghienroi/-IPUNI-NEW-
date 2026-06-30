@@ -25,7 +25,7 @@ export default function TopBar() {
         
         <DemoCountdown />
 
-        <div className={styles.actions}>
+        <div className={`${styles.actions} tour-step-1`}>
           <button className={styles.iconBtn} title="Lời khuyên" onClick={() => navigate('/advice')}>
             <BookOpen size={20} />
           </button>

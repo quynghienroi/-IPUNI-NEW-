@@ -18,7 +18,7 @@ export default function AppointmentsPage() {
   }, []);
 
   return (
-    <div className={styles.page}>
+    <div className={`${styles.page} tour-step-7`}>
       <h1 className={styles.title}>{t.appointments.title}</h1>
       <p className={styles.subtitle}>{t.appointments.subtitle}</p>
 
