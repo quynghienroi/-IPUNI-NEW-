@@ -7,17 +7,16 @@ export default function OnboardingTour() {
   const [showChoice, setShowChoice] = useState(false);
   const [runTour, setRunTour] = useState(false);
   const user = useAuthStore(state => state.user);
-  const effectRan = useRef(false);
-
+  
   useEffect(() => {
-    // Prevent double execution in React StrictMode
-    if (effectRan.current) return;
-    effectRan.current = true;
+    // Wait for user to be loaded from API
+    if (user === null) return;
 
+    const isDemoUser = user.is_demo || (user.email && user.email.startsWith('demo_'));
     const forceTour = localStorage.getItem('diaplus_force_tour');
     
     // First, check if we need to force the tour (user chose it on landing page)
-    if (forceTour || (user && user.is_demo && !localStorage.getItem('diaplus_has_seen_tour'))) {
+    if (forceTour || (isDemoUser && !localStorage.getItem('diaplus_has_seen_tour'))) {
       const timer = setTimeout(() => {
         setRunTour(true);
       }, 500);

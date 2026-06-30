@@ -7,15 +7,16 @@ export default function DemoCountdown() {
   const logout = useAuthStore((s) => s.logout);
   const [timeLeft, setTimeLeft] = useState(null);
 
+  const isDemo = user?.is_demo || (user?.email && user.email.startsWith('demo_'));
+
   useEffect(() => {
-    if (!user || !user.is_demo || !user.created_at) return;
+    if (!user || !isDemo) return;
 
     // 30 mins in ms
     const DEMO_DURATION = 30 * 60 * 1000;
     
-    // Calculate expiration time from created_at
-    // Fix cho Safari/iOS (chuyển "YYYY-MM-DD HH:mm:ss" thành "YYYY-MM-DDTHH:mm:ssZ")
-    let dateStr = user.created_at;
+    // Calculate expiration time from created_at (fallback to now if backend is outdated)
+    let dateStr = user.created_at || new Date().toISOString();
     if (typeof dateStr === 'string' && dateStr.includes(' ') && !dateStr.includes('T')) {
       dateStr = dateStr.replace(' ', 'T') + 'Z';
     }
@@ -45,7 +46,7 @@ export default function DemoCountdown() {
     return () => clearInterval(interval);
   }, [user, logout]);
 
-  if (!user || !user.is_demo) {
+  if (!user || !isDemo) {
     return null;
   }
 
