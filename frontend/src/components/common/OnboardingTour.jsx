@@ -49,7 +49,7 @@ export default function OnboardingTour() {
 
   const steps = [
     {
-      route: '/',
+      route: '/dashboard',
       target: '.tour-step-1',
       placement: 'bottom',
       content: (
@@ -63,7 +63,7 @@ export default function OnboardingTour() {
       ),
     },
     {
-      route: '/',
+      route: '/dashboard',
       target: '.tour-step-2',
       placement: 'top',
       content: (
@@ -79,7 +79,7 @@ export default function OnboardingTour() {
       ),
     },
     {
-      route: '/',
+      route: '/dashboard',
       target: '.tour-step-3',
       placement: 'top',
       content: (

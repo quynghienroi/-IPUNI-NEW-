@@ -15,7 +15,8 @@ async function register(req, res) {
     return sendSuccess(res, null, 'Mã OTP đã được gửi đến email của bạn.');
   } catch (err) {
     // Nodemailer thất bại hoặc lỗi bất ngờ
-    return sendError(res, 'Không thể gửi email. Vui lòng thử lại sau.', 500);
+    const errorMsg = err.message || 'Lỗi không xác định.';
+    return sendError(res, `Không thể gửi OTP. Chi tiết lỗi từ máy chủ Mail: ${errorMsg}`, 500);
   }
 }
 
