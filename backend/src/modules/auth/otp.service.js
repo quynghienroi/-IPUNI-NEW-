@@ -8,10 +8,11 @@ const OTP_TTL_MS = 5 * 60 * 1000; // 5 phút
 const MAX_WRONG_ATTEMPTS = 3;
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp-relay.brevo.com',
+  port: 587,
   auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS, // App Password Gmail
+    user: process.env.BREVO_USER || process.env.MAIL_USER,
+    pass: process.env.BREVO_PASS || process.env.MAIL_PASS, 
   },
 });
 
