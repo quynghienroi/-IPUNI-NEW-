@@ -109,6 +109,7 @@ export default function LandingPage() {
               onClick={async () => {
                 setDemoLoading(true);
                 try {
+                  localStorage.setItem('diaplus_force_tour', 'true');
                   await demoLogin();
                   navigate('/dashboard');
                 } catch (err) {
