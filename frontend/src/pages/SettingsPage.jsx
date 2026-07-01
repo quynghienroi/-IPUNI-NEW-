@@ -71,7 +71,9 @@ export default function SettingsPage() {
       };
 
       mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        // Lấy định dạng thực tế của thiết bị (iOS Safari thường là audio/mp4, không phải webm)
+        const mimeType = audioChunksRef.current[0]?.type || mediaRecorderRef.current.mimeType || 'audio/mp4';
+        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
         await voiceAlertService.saveVoice(alertType, audioBlob);
         loadSettings();
         
