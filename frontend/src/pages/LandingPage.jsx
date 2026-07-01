@@ -99,8 +99,8 @@ export default function LandingPage() {
                 <Play size={24} />
               </div>
               <div className={styles.choiceText}>
-                <h3>Đăng ký / Đăng nhập</h3>
-                <p>Tôi muốn tạo tài khoản hoặc đăng nhập bằng tài khoản của tôi</p>
+                <h3>Tự trải nghiệm</h3>
+                <p>Tôi muốn tự khám phá các tính năng của DIA+</p>
               </div>
             </button>
 
@@ -120,11 +120,11 @@ export default function LandingPage() {
               disabled={demoLoading}
             >
               <div className={styles.choiceIcon} style={{ background: '#FEF3C7', color: '#D97706' }}>
-                <Sparkles size={24} />
+                <BookOpen size={24} />
               </div>
               <div className={styles.choiceText}>
-                <h3>{demoLoading ? 'Đang vào...' : 'Trải nghiệm nhanh (Demo)'}</h3>
-                <p>Khám phá ngay các tính năng bằng tài khoản dùng thử</p>
+                <h3>{demoLoading ? 'Đang vào...' : 'Hướng dẫn dùng app'}</h3>
+                <p>Xem hướng dẫn chi tiết từng bước cho người mới</p>
               </div>
             </button>
           </div>
