@@ -142,7 +142,7 @@ export default function OnboardingTour() {
       showProgress: true,
       animate: true,
       allowClose: false,
-      overlayColor: 'rgba(0, 0, 0, 0.6)',
+      overlayColor: 'rgba(0, 0, 0, 0.75)',
       nextBtnText: 'Tiếp theo',
       prevBtnText: 'Quay lại',
       doneBtnText: 'Hoàn tất',
