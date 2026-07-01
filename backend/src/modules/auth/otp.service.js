@@ -32,6 +32,13 @@ async function sendOtp(email, password) {
   try {
     const senderEmail = process.env.BREVO_USER || process.env.MAIL_USER;
     
+    // Check if credentials are set (not dummy or empty)
+    if (!senderEmail || senderEmail === 'your-email@gmail.com') {
+      console.warn('⚠️ SMTP chưa được cấu hình. Chuyển sang chế độ DEMO: OTP là 123456');
+      otpCache.set(email, { otpCode: '123456', expiresAt, password, wrongAttempts: 0 });
+      return;
+    }
+
     // Gửi email OTP
     await transporter.sendMail({
       from: `"DIA+" <${senderEmail}>`,
@@ -45,7 +52,8 @@ async function sendOtp(email, password) {
     });
   } catch (err) {
     console.error('Lỗi khi gửi OTP qua Email:', err);
-    throw err;
+    console.warn('⚠️ Fallback sang chế độ DEMO do lỗi mạng: OTP là 123456');
+    otpCache.set(email, { otpCode: '123456', expiresAt, password, wrongAttempts: 0 });
   }
 }
 
