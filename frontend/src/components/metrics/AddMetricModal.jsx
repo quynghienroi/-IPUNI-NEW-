@@ -38,13 +38,6 @@ export default function AddMetricModal({ onClose, onSave, onSuccess, defaultType
       return;
     }
 
-    if (measurementType === MEASUREMENT_TYPES.BLOOD_PRESSURE) {
-      if (!valueDiastolic || isNaN(numDia) || numDia < 30 || numDia > 150) {
-        setError(`Tâm trương: 30 – 150 ${unit}`);
-        return;
-      }
-    }
-
     setError('');
     setSaving(true);
 
@@ -57,10 +50,6 @@ export default function AddMetricModal({ onClose, onSave, onSuccess, defaultType
         note: note.trim() || undefined
       };
       
-      if (measurementType === MEASUREMENT_TYPES.BLOOD_PRESSURE) {
-        payload.value_diastolic = numDia;
-      }
-
       await onSave(payload);
       onSuccess?.();
       onClose();
@@ -83,9 +72,6 @@ export default function AddMetricModal({ onClose, onSave, onSuccess, defaultType
           <option value={MEASUREMENT_TYPES.GLUCOSE_FASTING}>
             {t.metrics?.types?.glucose_fasting || METRIC_TYPES.glucose_fasting.label}
           </option>
-          <option value={MEASUREMENT_TYPES.GLUCOSE_POSTMEAL}>
-            {t.metrics?.types?.glucose_postmeal || METRIC_TYPES.glucose_postmeal.label}
-          </option>
           <option value={MEASUREMENT_TYPES.HBAIC}>
             {t.metrics?.types?.hba1c || METRIC_TYPES.hba1c.label}
           </option>
@@ -95,56 +81,24 @@ export default function AddMetricModal({ onClose, onSave, onSuccess, defaultType
           <option value={MEASUREMENT_TYPES.GLUCOSE_TOLERANCE}>
             {t.metrics?.types?.glucose_tolerance || METRIC_TYPES.glucose_tolerance.label}
           </option>
-          <option value={MEASUREMENT_TYPES.BLOOD_PRESSURE}>
-            {t.metrics?.types?.blood_pressure || METRIC_TYPES.blood_pressure.label}
-          </option>
         </select>
       </div>
 
       <div className={styles.group}>
         <label className={styles.label}>{t.addMetric?.valueLabel || 'Value'} ({unit})</label>
-        {measurementType === MEASUREMENT_TYPES.BLOOD_PRESSURE ? (
-          <div className={styles.bloodPressureRow}>
-            <div className={styles.valueRow}>
-              <input
-                className={styles.input}
-                type="number"
-                step="1"
-                min={minValue}
-                max={maxValue}
-                placeholder="Tâm thu (120)"
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-              />
-              <span className={styles.bpDivider}>/</span>
-              <input
-                className={styles.input}
-                type="number"
-                step="1"
-                min={30}
-                max={150}
-                placeholder="Tâm trương (80)"
-                value={valueDiastolic}
-                onChange={(e) => setValueDiastolic(e.target.value)}
-              />
-              <span className={styles.unit}>{unit}</span>
-            </div>
-          </div>
-        ) : (
-          <div className={styles.valueRow}>
-            <input
-              className={styles.input}
-              type="number"
-              step="0.1"
-              min={minValue}
-              max={maxValue}
-              placeholder={placeholder}
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-            />
-            <span className={styles.unit}>{unit}</span>
-          </div>
-        )}
+        <div className={styles.valueRow}>
+          <input
+            className={styles.input}
+            type="number"
+            step="0.1"
+            min={minValue}
+            max={maxValue}
+            placeholder={placeholder}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+          />
+          <span className={styles.unit}>{unit}</span>
+        </div>
         {error && <div className={styles.error}>{error}</div>}
       </div>
 
