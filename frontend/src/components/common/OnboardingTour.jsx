@@ -197,32 +197,57 @@ export default function OnboardingTour() {
     const { action, index, status, type } = data;
     const finishedStatuses = [STATUS.FINISHED, STATUS.SKIPPED];
     
-    if (finishedStatuses.includes(status)) {
+    if (finishedStatuses.includes(status) || action === 'close') {
       setRunTour(false);
       setStepIndex(0);
-      navigate('/');
       return;
     }
 
-    // Step logic: When a step finishes (next/prev clicked)
-    if (type === 'step:after') {
+    if (type === 'step:after' || type === 'error:target_not_found') {
       const nextStepIndex = index + (action === 'prev' ? -1 : 1);
-      
       const nextStep = steps[nextStepIndex];
-      if (nextStep) {
-        if (nextStep.route && location.pathname !== nextStep.route) {
-          // Pause tour temporarily to wait for navigation
-          setRunTour(false); 
-          navigate(nextStep.route);
-          
-          // Wait for DOM to render the new page
-          setTimeout(() => {
+      
+      if (!nextStep) {
+        setRunTour(false);
+        setStepIndex(0);
+        return;
+      }
+
+      const prepareAndRunStep = () => {
+        const checkAndRun = () => {
+          const targetEl = document.querySelector(nextStep.target);
+          if (targetEl) {
+            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => {
+              setStepIndex(nextStepIndex);
+              setRunTour(true);
+            }, 400);
+          } else {
             setStepIndex(nextStepIndex);
             setRunTour(true);
-          }, 300);
+          }
+        };
+
+        if (document.querySelector(nextStep.target)) {
+          checkAndRun();
         } else {
-          setStepIndex(nextStepIndex);
+          const observer = new MutationObserver((mutations, obs) => {
+            if (document.querySelector(nextStep.target)) {
+              obs.disconnect();
+              checkAndRun();
+            }
+          });
+          observer.observe(document.body, { childList: true, subtree: true });
+          setTimeout(() => observer.disconnect(), 3000);
         }
+      };
+
+      setRunTour(false);
+      if (nextStep.route && location.pathname !== nextStep.route) {
+        navigate(nextStep.route);
+        setTimeout(prepareAndRunStep, 100);
+      } else {
+        prepareAndRunStep();
       }
     }
   };
@@ -261,7 +286,7 @@ export default function OnboardingTour() {
         showSkipButton
         showProgress
         disableOverlayClose
-        disableScrolling={false}
+        disableScrolling={true}
         callback={handleJoyrideCallback}
         styles={{
           options: {

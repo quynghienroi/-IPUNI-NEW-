@@ -16,7 +16,7 @@ export default function TopBar() {
 
   return (
     <>
-      <header className={styles.topbar}>
+      <header className={`${styles.topbar} tour-step-1`}>
         <div className={styles.logo}>
           <Logo size="sm" variant="onDark" />
           {isCuteMode && <Sparkles size={14} color="#fff" strokeWidth={2.5} />}
@@ -25,7 +25,7 @@ export default function TopBar() {
         
         <DemoCountdown />
 
-        <div className={`${styles.actions} tour-step-1`}>
+        <div className={styles.actions}>
           <button className={styles.iconBtn} title="Lời khuyên" onClick={() => navigate('/advice')}>
             <BookOpen size={20} />
           </button>
