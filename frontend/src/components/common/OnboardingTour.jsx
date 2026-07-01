@@ -101,7 +101,7 @@ export default function OnboardingTour() {
       popover: {
         title: 'Quản lý Thuốc',
         description: 'Tab này hiển thị toàn bộ danh sách thuốc bạn đang sử dụng cùng liều lượng và trạng thái.',
-        side: 'top',
+        side: 'bottom',
         align: 'start'
       },
       route: '/medications'
@@ -111,7 +111,7 @@ export default function OnboardingTour() {
       popover: {
         title: 'Lịch khám Bác sĩ',
         description: 'Xem lịch tái khám tiếp theo và chuẩn bị các thông tin cần thiết.',
-        side: 'top',
+        side: 'bottom',
         align: 'start'
       },
       route: '/appointments'
@@ -121,7 +121,7 @@ export default function OnboardingTour() {
       popover: {
         title: 'Cài đặt nhắc nhở',
         description: 'Bạn có thể tự ghi âm giọng nói của người thân để làm âm báo nhắc uống thuốc, giúp cảm giác thân thiện hơn thay vì giọng máy.',
-        side: 'top',
+        side: 'bottom',
         align: 'start'
       },
       route: '/settings'

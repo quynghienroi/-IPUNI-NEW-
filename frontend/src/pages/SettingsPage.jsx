@@ -116,7 +116,7 @@ export default function SettingsPage() {
         <p>Ghi âm giọng nói của người nhà để tạo sự thân thuộc khi ứng dụng nhắc nhở</p>
       </div>
 
-      <div className={`${styles.alertList} tour-step-8`}>
+      <div className={styles.alertList}>
         {ALERT_CONFIG.map((item) => {
           const setting = settings[item.id] || {};
           const hasVoice = !!setting.audioBase64;

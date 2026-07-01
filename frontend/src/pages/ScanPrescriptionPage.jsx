@@ -154,8 +154,8 @@ export default function ScanPrescriptionPage() {
   }
 
   return (
-    <div className={`${styles.page} tour-step-5`}>
-      <div className={styles.header}>
+    <div className={styles.page}>
+      <div className={`${styles.header} tour-step-5`}>
         <div className={styles.headerTop}>
           <h1>Quét Đơn Thuốc</h1>
           <button 

@@ -53,8 +53,8 @@ export default function MetricsPage() {
   };
 
   return (
-    <div className={`${styles.page} tour-step-4`}>
-      <div className={styles.header}>
+    <div className={styles.page}>
+      <div className={`${styles.header} tour-step-4`}>
         <div className={styles.titleBlock}>
           <h1 className={styles.title}>{t.metrics.title}</h1>
           <p className={styles.subtitle}>{t.metrics.subtitle}</p>

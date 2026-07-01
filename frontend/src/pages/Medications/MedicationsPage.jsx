@@ -13,8 +13,8 @@ export default function MedicationsPage() {
   useEffect(() => { fetchMedications(); }, []);
 
   return (
-    <div className={`${styles.page} tour-step-6`}>
-      <h1 className={styles.title}>{t.medications.title}</h1>
+    <div className={styles.page}>
+      <h1 className={`${styles.title} tour-step-6`}>{t.medications.title}</h1>
       <p className={styles.subtitle}>{t.medications.subtitle}</p>
 
       {loading ? (
