@@ -1,0 +1,35 @@
+/* Global CSS overrides for driver.js to fix stacking contexts and mobile rendering */
+.driver-popover {
+  max-width: 90vw !important;
+  font-family: var(--font-body, sans-serif) !important;
+  z-index: 100000 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2) !important;
+}
+
+.driver-popover-title {
+  font-weight: 700 !important;
+  font-size: 18px !important;
+  color: #1B5FA6 !important;
+}
+
+.driver-popover-description {
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+}
+
+.driver-popover-btn-next,
+.driver-popover-btn-prev,
+.driver-popover-btn-done {
+  border-radius: 20px !important;
+  font-weight: 600 !important;
+}
+
+.driver-overlay {
+  z-index: 99999 !important;
+}
+
+.driver-active-element, 
+.driver-active-element * {
+  z-index: 100001 !important;
+}
