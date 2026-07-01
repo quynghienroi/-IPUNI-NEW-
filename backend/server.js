@@ -12,6 +12,7 @@ const appointmentsRoutes = require('./src/modules/appointments/appointments.rout
 const adviceRoutes = require('./src/modules/advice/advice.routes');
 const usersRoutes = require('./src/modules/users/users.routes');
 const scanRoutes = require('./src/modules/scan/scan.routes');
+const analyticsRoutes = require('./src/modules/analytics/analytics.routes');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -43,6 +44,7 @@ app.use('/api/v1/appointments', appointmentsRoutes);
 app.use('/api/v1/advice', adviceRoutes);
 app.use('/api/v1/users', usersRoutes);
 app.use('/api/v1/scan', scanRoutes);
+app.use('/api/v1/analytics', analyticsRoutes);
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
 
