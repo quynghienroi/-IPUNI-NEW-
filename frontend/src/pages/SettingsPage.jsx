@@ -206,22 +206,25 @@ export default function SettingsPage() {
           </div>
         </div>
         <div className={styles.scaleRow} style={{ display: 'flex', gap: '8px' }}>
-          {[1, 1.1, 1.2, 1.3].map((lvl) => (
-            <button
-              key={lvl}
-              onClick={() => setFontScale(lvl)}
-              style={{
-                flex: 1, padding: '10px 0', borderRadius: '10px', fontWeight: 600,
-                border: fontScale === lvl ? '2px solid #3B82F6' : '1px solid #E2E8F0',
-                background: fontScale === lvl ? '#EFF6FF' : 'white',
-                color: fontScale === lvl ? '#1B5FA6' : '#64748B',
-                cursor: 'pointer'
-              }}
-              aria-label={`Phóng to ${lvl}x`}
-            >
-              {lvl}x
-            </button>
-          ))}
+          {[1, 2, 3, 4].map((lvl) => {
+            const actualScale = { 1: 1, 2: 1.1, 3: 1.2, 4: 1.3 }[lvl];
+            return (
+              <button
+                key={lvl}
+                onClick={() => setFontScale(actualScale)}
+                style={{
+                  flex: 1, padding: '10px 0', borderRadius: '10px', fontWeight: 600,
+                  border: fontScale === actualScale ? '2px solid #3B82F6' : '1px solid #E2E8F0',
+                  background: fontScale === actualScale ? '#EFF6FF' : 'white',
+                  color: fontScale === actualScale ? '#1B5FA6' : '#64748B',
+                  cursor: 'pointer'
+                }}
+                aria-label={`Mức phóng to ${lvl}`}
+              >
+                {lvl}x
+              </button>
+            );
+          })}
         </div>
 
         <div className={styles.divider} style={{ margin: '24px 0', borderBottom: '1px solid #F1F5F9' }} />
