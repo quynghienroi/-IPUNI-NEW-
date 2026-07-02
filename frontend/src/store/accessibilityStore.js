@@ -13,6 +13,11 @@ function saveStoredLevel(factor) {
 
 const useAccessibilityStore = create((set) => {
   const level = getStoredLevel();
+  
+  // Xoá bỏ thuộc tính zoom cũ ở cấp độ document để sửa lỗi văng giao diện trang đăng nhập (do cache cũ)
+  if (typeof document !== 'undefined') {
+    document.documentElement.style.zoom = '';
+  }
 
   return {
     fontScale: level,

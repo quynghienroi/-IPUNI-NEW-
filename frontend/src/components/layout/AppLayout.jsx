@@ -15,9 +15,9 @@ export default function AppLayout({ children }) {
   useEffect(() => { restoreTheme(); }, [restoreTheme]);
 
   return (
-    <div className={styles.layout} style={{ zoom: fontScale }}>
+    <div className={styles.layout}>
       <TopBar />
-      <main className="page-content">
+      <main className="page-content" style={{ zoom: fontScale }}>
         {children}
       </main>
       <BottomNav />
