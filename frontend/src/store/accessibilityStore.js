@@ -7,22 +7,19 @@ function getStoredLevel() {
   return !isNaN(v) && v >= 1 && v <= 2 ? v : 1;
 }
 
-function applyScale(factor) {
-  // zoom phóng to + reflow theo bề rộng viewport nên không tràn ngang
-  document.documentElement.style.zoom = factor;
+function saveStoredLevel(factor) {
   localStorage.setItem(SCALE_KEY, String(factor));
 }
 
 const useAccessibilityStore = create((set) => {
   const level = getStoredLevel();
-  applyScale(level);
 
   return {
     fontScale: level,
     setFontScale: (level) =>
       set(() => {
-        const clamped = Math.min(2, Math.max(1, level));
-        applyScale(clamped);
+        const clamped = Math.min(1.3, Math.max(1, level));
+        saveStoredLevel(clamped);
         return { fontScale: clamped };
       }),
   };
