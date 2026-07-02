@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const logger = require('./src/utils/logger');
 const { errorMiddleware } = require('./src/middlewares/error.middleware');
@@ -17,10 +18,28 @@ const analyticsRoutes = require('./src/modules/analytics/analytics.routes');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// 1. Cài đặt Helmet (Bảo vệ Header HTTP khỏi Clickjacking, MIME sniffing, v.v.)
+app.use(helmet());
+
+// 2. Siết chặt CORS (Chỉ cho phép các domain được chỉ định)
+const allowedOrigins = [
+  'http://localhost:5180',
+  'http://localhost:5173',
+  'https://diaplus-v2.vercel.app', // Tên miền frontend nếu có
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
 app.use(cors({
-  origin: true,
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1 || origin.endsWith('.vercel.app')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
+
 app.use(express.json());
 
 // Request logger middleware
@@ -29,13 +48,25 @@ app.use((req, res, next) => {
   next();
 });
 
-const authLimiter = rateLimit({
+// 3. Gia cố Rate Limiting
+const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 phút
-  max: 1000, // Mở rộng lên 1000 request / 15 phút để chuẩn bị cho sự kiện tung demo 100 người
+  max: 300, // Giới hạn chung 300 request/15 phút cho mỗi IP để chống DDoS
   message: { message: 'Too many requests from this IP, please try again after 15 minutes' },
   standardHeaders: true,
   legacyHeaders: false,
 });
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 phút
+  max: 10, // Chống Brute Force: Chỉ cho phép 10 lần thử đăng nhập/đăng ký mỗi 15 phút
+  message: { message: 'Bạn đã nhập sai quá nhiều lần. Vui lòng thử lại sau 15 phút.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Áp dụng giới hạn chung cho toàn bộ API
+app.use('/api/', apiLimiter);
 
 app.use('/api/v1/auth', authLimiter, authRoutes);
 app.use('/api/v1/metrics', metricsRoutes);
