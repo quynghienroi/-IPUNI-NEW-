@@ -48,10 +48,10 @@ app.use((req, res, next) => {
   next();
 });
 
-// 3. Gia cố Rate Limiting
+// 3. Nới lỏng Rate Limiting (Đang trong giai đoạn khảo sát người dùng)
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 phút
-  max: 300, // Giới hạn chung 300 request/15 phút cho mỗi IP để chống DDoS
+  max: 5000, // Thả cửa 5000 request/15 phút để người dùng test thoải mái
   message: { message: 'Too many requests from this IP, please try again after 15 minutes' },
   standardHeaders: true,
   legacyHeaders: false,
@@ -59,7 +59,7 @@ const apiLimiter = rateLimit({
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 phút
-  max: 10, // Chống Brute Force: Chỉ cho phép 10 lần thử đăng nhập/đăng ký mỗi 15 phút
+  max: 1000, // Cho phép 1000 lần thử đăng nhập/đăng ký mỗi 15 phút để tránh khóa nhầm IP khi khảo sát đông người
   message: { message: 'Bạn đã nhập sai quá nhiều lần. Vui lòng thử lại sau 15 phút.' },
   standardHeaders: true,
   legacyHeaders: false,
