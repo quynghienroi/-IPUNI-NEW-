@@ -86,6 +86,7 @@ If isDiabetesPrescription is false, you should still attempt to parse the medica
 
 CRITICAL INSTRUCTIONS:
 - A valid medical prescription MUST contain a list of prescribed medications (drugs with names and dosages/frequencies).
+- You MUST extract ALL medications found in the prescription. Do NOT truncate, do NOT summarize, and do NOT skip any medication, even if there are more than 10 medications.
 - If the document is a laboratory test result (kết quả xét nghiệm), diagnostic imaging report (kết quả siêu âm/chụp X-quang), referral letter, or if the text is unreadable/obstructed due to heavy watermarks, set "isPrescription" to false.
 - Do NOT parse diagnostic parameters (like glucose levels, HbA1c values, etc.) as medications.
 

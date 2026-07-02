@@ -77,22 +77,27 @@ export default function ScanPrescriptionPage() {
     
     setIsSavingAll(true);
     try {
-      const promises = result.medications.map(med => 
-        medicationsService.create({
-          name: med.name,
-          dosage: med.dosage || 'Theo chỉ định',
-          frequency: med.frequency || 'Theo chỉ định bác sĩ',
-          times: med.times && med.times.length > 0 ? med.times : ['07:00'],
-          instructions: med.instructions || '',
-          doctor_name: result.doctorName || med.doctor_name || '',
-          prescribed_at: result.prescriptionDate || new Date().toISOString().split('T')[0],
-          is_active: 1,
-        })
-      );
-      
-      const results = await Promise.allSettled(promises);
-      const successCount = results.filter(r => r.status === 'fulfilled').length;
-      const failCount = results.length - successCount;
+      let successCount = 0;
+      let failCount = 0;
+
+      for (const med of result.medications) {
+        try {
+          await medicationsService.create({
+            name: med.name,
+            dosage: med.dosage || 'Theo chỉ định',
+            frequency: med.frequency || 'Theo chỉ định bác sĩ',
+            times: med.times && med.times.length > 0 ? med.times : ['07:00'],
+            instructions: med.instructions || '',
+            doctor_name: result.doctorName || med.doctor_name || '',
+            prescribed_at: result.prescriptionDate || new Date().toISOString().split('T')[0],
+            is_active: 1,
+          });
+          successCount++;
+        } catch (e) {
+          console.error('Lưu thuốc thất bại:', med.name, e);
+          failCount++;
+        }
+      }
       
       // Save doctor notes and visit info as a completed appointment if present
       if (result.doctorNotes || result.doctorName) {
